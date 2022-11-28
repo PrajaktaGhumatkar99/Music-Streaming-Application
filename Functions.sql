@@ -10,7 +10,7 @@ READS SQL DATA
 BEGIN 
 	DECLARE uid_found INT;
     DECLARE uid_not_found INT;
-	DECLARE user_cursor CURSOR FOR SELECT userId FROM user WHERE email = email_p AND phone = phone_p;
+	DECLARE user_cursor CURSOR FOR SELECT userId FROM users WHERE email = email_p AND phone = phone_p;
 	DECLARE CONTINUE HANDLER FOR NOT FOUND
 		SET uid_not_found = TRUE;
 

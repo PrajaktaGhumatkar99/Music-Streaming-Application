@@ -1,0 +1,62 @@
+{% extends 'layout.html' %}
+
+{% block title %}Playlist{% endblock %}
+{% block pagetitle %}Playlist{% endblock %}
+
+{% block content %}
+<h1> Songs </h1>
+<table class="styled-table"> 
+    <thead>
+        <tr>
+           <th>ID</th> 
+           <th>Title</th> 
+           <th>Release</th> 
+           <th>Duration</th> 
+           <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for i in songs%}
+        <tr >
+                <td>{{i['songId']}}</td>
+                <td>{{i['title']}}</td>
+                <td>{{i['releaseDate']}}</td>
+                <td>{{i['duration']}}</td>
+                <td> 
+                    <form action="" method="post">
+                        <button name="add" value="{{i['songId']}}">Add</button>
+                    </form>
+                </td>
+        </tr>
+        {%endfor%}
+    </tbody>
+</table>
+
+<h1> Playlist </h1>
+<table class="styled-table"> 
+    <thead>
+        <tr>
+            <th>ID</th> 
+            <th>Title</th> 
+            <th>Release</th> 
+            <th>Duration</th> 
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for i in playlistsongs%}
+        <tr >
+                <td>{{i['songId']}}</td>
+                <td>{{i['title']}}</td>
+                <td>{{i['releaseDate']}}</td>
+                <td>{{i['duration']}}</td>
+                <td> 
+                    <form action="" method="post">
+                        <button name="delete" value="{{i['songId']}}">Delete</button>
+                    </form>
+                </td>
+        </tr>
+        {%endfor%}
+    </tbody>
+</table>
+{% endblock %}

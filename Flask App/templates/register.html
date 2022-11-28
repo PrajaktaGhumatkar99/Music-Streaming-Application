@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Register</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+	</head>
+	<body>
+		<div class="register">
+			<h1>Register</h1>
+			<div class="links">
+				<a href="{{ url_for('login') }}">Login</a>
+				<a href="{{ url_for('register') }}" class="active">Register</a>
+			</div>
+			<form action="{{ url_for('register') }}" method="post" autocomplete="off">
+				<input type="text" name="firstName" placeholder="First Name" id="firstName" required>
+				<input type="text" name="lastName" placeholder="Last Name" id="lastName" required>
+				<input type="email" name="email" placeholder="Email" id="email" required>
+				<input type="text" name="phone" placeholder="Phone Number" id="phone" required>
+				<span></span>
+				<h2> Payment Plans</h2>
+				<select name="plan" id="plan" required>
+					{% for p in paymentplans %}
+						<option value = "{{p['planId']}}"> {{p['type']}}</option>
+					{% endfor %}
+				</select>
+				<div class="msg">{{ msg }}</div>
+				<input type="submit" value="Register">
+			</form>
+		</div>
+	</body>
+</html>
