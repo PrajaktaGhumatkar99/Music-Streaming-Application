@@ -14,12 +14,26 @@
 				<a href="{{ url_for('register') }}" class="active">Register</a>
 			</div>
 			<form action="{{ url_for('register') }}" method="post" autocomplete="off">
+				<label for="firstName">
+					<i class="fas fa-user"></i>
+				</label>
 				<input type="text" name="firstName" placeholder="First Name" id="firstName" required>
+				<label for="firstName">
+					<i class="fas fa-user"></i>
+				</label>
 				<input type="text" name="lastName" placeholder="Last Name" id="lastName" required>
+				<label for="firstName">
+					<i class="fas fa-envelope"></i>
+				</label>
 				<input type="email" name="email" placeholder="Email" id="email" required>
+				<label for="firstName">
+					<i class="fas fa-phone"></i>
+				</label>
 				<input type="text" name="phone" placeholder="Phone Number" id="phone" required>
 				<span></span>
-				<h2> Payment Plans</h2>
+				<label for="plan">
+					<i class="fas fa-money-bill"></i>
+				</label>
 				<select name="plan" id="plan" required>
 					{% for p in paymentplans %}
 						<option value = "{{p['planId']}}"> {{p['type']}}</option>

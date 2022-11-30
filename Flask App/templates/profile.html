@@ -5,6 +5,14 @@
 {% block pagetitle %}Profile{% endblock %}
 
 {% block content %}
-
+<div class="card">
+    <h1>Name: {{userinfo['firstName']}} {{userinfo['lastName']}}</h1>
+    <h1>Email: {{userinfo['email']}}</h1>
+    <h1>Phone: {{userinfo['phone']}}</h1>
+    <span></span>
+    <h1>Plan: {{paymentinfo['type']}}</h1>
+    <h1>Price: {{paymentinfo['amount']}}</h1>
+    <h1>Renewal Date: {{datestr}}</h1>
+</div>
 
 {% endblock %}

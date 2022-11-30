@@ -25,7 +25,21 @@ BEGIN
 END $$
 
 DELIMITER ;
-SELECT findUser("seamus.rioux3@gmail.com", "6038608279") as foundUser;
 ; 
 
--- INSERT INTO user VALUES(0, "Seamus", "Rioux", "seamus.rioux3@gmail.com", "6038608279");
+DROP FUNCTION IF EXISTS countSongsInPlaylist;
+
+DELIMITER $$
+CREATE FUNCTION countSongsInPlaylist(playlist_id INT) 
+RETURNS INT
+DETERMINISTIC
+READS SQL DATA
+BEGIN 
+	DECLARE song_count INT;
+    SELECT count(*) INTO song_count FROM playlistsong WHERE playlistId = playlist_id;
+	RETURN song_count;
+END $$
+
+DELIMITER ;
+SELECT countSongsInPlaylist(1) as a;
+; 

@@ -29,6 +29,11 @@ BEGIN
 END $$
 DELIMITER ;
 ;
+
+/*
+	Get Procedures
+*/
+
 -- Get payment plan information
 DROP PROCEDURE IF EXISTS getPaymentPlans;
 DELIMITER $$
@@ -38,6 +43,27 @@ BEGIN
 END $$
 DELIMITER ;
 ;
+
+DROP PROCEDURE IF EXISTS getUserInformation;
+DELIMITER $$
+CREATE PROCEDURE getUserInformation(IN email_p VARCHAR(128))
+BEGIN
+	SELECT * FROM users WHERE email = email_p;
+END $$
+DELIMITER ;
+;
+
+
+DROP PROCEDURE IF EXISTS getPaymentInformation;
+
+DELIMITER $$
+CREATE PROCEDURE getPaymentInformation(IN plan_id INT) 
+BEGIN
+	SELECT * FROM paymentplans WHERE planId = plan_id;
+END $$
+DELIMITER ;
+;
+
 
 -- Gets songs in Playlist using playlist_id
 DROP PROCEDURE IF EXISTS getPlaylistSongs;
@@ -50,6 +76,10 @@ BEGIN
 END $$
 DELIMITER ;
 ;
+
+/*
+	Delete procedures
+*/
 
 -- Removes a song from a Playlist using playlist_id and song_id
 DROP PROCEDURE IF EXISTS removeSongFromPlaylist;

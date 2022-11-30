@@ -6,7 +6,7 @@
     -moz-osx-font-smoothing: grayscale;
 }
 body {
-    background-color: #435165;
+    background-color: #1E1B18;
     margin: 0;
 }
 .login, .register {
@@ -37,8 +37,8 @@ body {
     color: #9da3ac;
 }
 .login .links a.active, .register .links a.active {
-    border-bottom: 3px solid #3274d6;
-    color: #3274d6;
+    border-bottom: 3px solid #D8315B ;
+    color: #D8315B ;
 }
 .login form, .register form {
     display: flex;
@@ -52,7 +52,7 @@ body {
     align-items: center;
     width: 50px;
     height: 50px;
-    background-color: #3274d6;
+    background-color: #D8315B;
     color: #ffffff;
 }
 .login form input[type="password"], .login form input[type="text"], .login form input[type="email"], .register form input[type="password"], .register form input[type="text"], 
@@ -67,7 +67,7 @@ body {
     width: 100%;
     padding: 15px;
     margin-top: 20px;
-    background-color: #3274d6;
+    background-color: #D8315B ;
     border: 0;
     cursor: pointer;
     font-weight: bold;
@@ -75,11 +75,11 @@ body {
     transition: background-color 0.2s;
 }
 .login form input[type="submit"]:hover, .register form input[type="submit"]:hover {
-    background-color: #2868c7;
+    background-color: #D8315B;
     transition: background-color 0.2s;
 }
 .navtop {
-    background-color: #2f3947;
+    background-color: #1E1B18 ;
     height: 60px;
     width: 100%;
     border: 0;
@@ -156,12 +156,12 @@ body.loggedin {
     margin: 25px 0;
     font-size: 0.9em;
     font-family: sans-serif;
-    min-width: 50vw;
+    width: 100%;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
 }
 
 .styled-table thead tr {
-    background-color: #009879;
+    background-color: #D8315B;
     color: #ffffff;
     text-align: left;
 }
@@ -171,7 +171,14 @@ body.loggedin {
     padding: 12px 15px;
 }
 
-.styled-table tbody tr {
+.styled-table a {
+    text-decoration: none;
+    color: #ffffff;
+}
+
+.styled-table tbody tr a{
+    color: #1E1B18; 
+    text-decoration: none;
     border-bottom: 1px solid #dddddd;
 }
 
@@ -180,10 +187,20 @@ body.loggedin {
 }
 
 .styled-table tbody tr:last-of-type {
-    border-bottom: 2px solid #009879;
+    border-bottom: 2px solid #D8315B;
 }
 
 .styled-table tbody tr.active-row {
     font-weight: bold;
-    color: #009879;
+    color: #D8315B;
 }
+
+/*
+    Profile Styling
+*/
+
+
+
+/*
+    Home
+*/

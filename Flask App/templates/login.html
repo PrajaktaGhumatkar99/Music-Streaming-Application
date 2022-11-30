@@ -15,13 +15,13 @@
 			</div>
 			<form action="{{ url_for('login') }}" method="post">
 				<label for="username">
-					<i class="fas fa-user"></i>
+					<i class="fas fa-envelope"></i>
 				</label>
-				<input type="text" name="email" placeholder="Username" id="email" required>
+				<input type="text" name="email" placeholder="Email" id="email" required>
 				<label for="password">
-					<i class="fas fa-lock"></i>
+					<i class="fas fa-phone"></i>
 				</label>
-				<input type="text" name="phone" placeholder="Password" id="phone" required>
+				<input type="text" name="phone" placeholder="Phone" id="phone" required>
 				<div class="msg">{{ msg }}</div>
 				<input type="submit" value="Login">
 			</form>

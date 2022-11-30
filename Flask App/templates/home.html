@@ -5,25 +5,28 @@
 {% block pagetitle %}Home{% endblock %}
 
 {% block content %}
-<table class="styled-table"> 
-    <thead>
-        <tr>
-           <th>ID</th> 
-           <th>Name</th> 
-           <th>Tracks</th> 
-           <th>
-            <a href="{{ url_for('newplaylist') }}"><i class="fas fa-home"></i>New</a>
-           </th>
-        </tr>
-    </thead>
-    <tbody>
-        {%for i in playlists%}
-        <tr >
-                <td> <a href="{{ url_for('playlist', playlist_id= i['playlistId']) }}">{{i['playlistId']}} </a></td>
+<div>
+    <table class="styled-table"> 
+        <thead>
+            <tr>
+            <th>ID</th> 
+            <th>Name</th> 
+            <th>Tracks</th> 
+            <th> 
+                <a href="{{ url_for('newplaylist')}}" >New Playlist</a>
+            </th>
+            </tr>
+        </thead>
+        <tbody>
+            {%for i in playlists%}
+            <tr style="cursor: pointer;">
+                <td>{{i['playlistId']}}</td>
                 <td>{{i['name']}}</td>
-                <td>600</td>
-        </tr>
-        {%endfor%}
-    </tbody>
-</table>
+                <td>{{i['songs']}}</td>
+                <td><a href="{{ url_for('playlist', playlist_id=i['playlistId'])}}"> View </a></td>
+            </tr>
+            {%endfor%}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

@@ -125,14 +125,22 @@ def register():
 Home Page
 
 """
-@app.route('/home')
+@app.route('/home', methods=['GET', 'POST'])
 def home():
     # Check if user is loggedin
     if 'loggedin' in session:
+        if(request.method == 'POST' and 'new' in request.form):
+            print('clicked')
+            return redirect(url_for('newplaylist'))
         cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             'SELECT * FROM playlists WHERE userId = %s', (session['id']))
+        
         playlists = list(cursor.fetchall())
+        for p in playlists:
+            cursor.execute('SELECT countSongsInPlaylist(%s) as cnt', (p['playlistId']))
+            song_count = cursor.fetchone()
+            p['songs'] = song_count['cnt']
         print(playlists)
         return render_template('home.html', username=session['email'], playlists = playlists)
     # User is not loggedin redirect to login page
@@ -147,7 +155,17 @@ Profile Page
 def profile():
     # Check if user is loggedin
     if 'loggedin' in session:
-        return render_template('profile.html', username=session['email'])
+        cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
+        cursor.execute(
+            'CALL getUserInformation(%s)', (session['email']))
+        userInfo = cursor.fetchone()
+        cursor.execute(
+            'CALL getPaymentInformation(%s)', (userInfo['planId']))
+        paymentInfo = cursor.fetchone()
+        print(paymentInfo)
+        print(userInfo)
+        dateStr = str(userInfo['planDate'].month) + '/' + str(userInfo['planDate'].day) + '/' + str(userInfo['planDate'].year)
+        return render_template('profile.html', userinfo=userInfo, paymentinfo = paymentInfo, datestr = dateStr)
         
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
