@@ -30,6 +30,27 @@ END $$
 DELIMITER ;
 ;
 
+-- Create a new playlist using name status and userId 
+DROP  PROCEDURE IF EXISTS createPlaylist;
+DELIMITER $$
+CREATE PROCEDURE createPlaylist(IN name_p VARCHAR(45), IN status_p VARCHAR(64), IN userId INT)
+BEGIN
+	INSERT INTO playlists VALUES(0, name_p, status_p, userId);
+END $$
+DELIMITER ;
+;
+
+
+DROP  PROCEDURE IF EXISTS addSongPlaylistLink;
+DELIMITER $$
+CREATE PROCEDURE addSongPlaylistLink(IN song_id INT, IN playlist_id INT)
+BEGIN
+	INSERT INTO playlistsong VALUES(song_id, playlist_id);
+END $$
+DELIMITER ;
+;
+
+
 /*
 	Get Procedures
 */
@@ -44,6 +65,7 @@ END $$
 DELIMITER ;
 ;
 
+-- Get information about the user based on the email
 DROP PROCEDURE IF EXISTS getUserInformation;
 DELIMITER $$
 CREATE PROCEDURE getUserInformation(IN email_p VARCHAR(128))
@@ -53,7 +75,7 @@ END $$
 DELIMITER ;
 ;
 
-
+-- Get information about the payment planId
 DROP PROCEDURE IF EXISTS getPaymentInformation;
 
 DELIMITER $$
@@ -70,12 +92,56 @@ DROP PROCEDURE IF EXISTS getPlaylistSongs;
 DELIMITER $$
 CREATE PROCEDURE getPlaylistSongs(IN playlist_id INT) 
 BEGIN
-	SELECT s.songId, title, releaseDate, duration FROM songs AS s
+	SELECT s.songId, title, releaseDate, duration, firstName, lastName FROM songs AS s
     JOIN playlistsong AS p ON s.songId = p.songId
+    JOIN artistsong AS l ON s.songId = l.songId
+    JOIN artists AS a ON l.artistId = a.artistId
     WHERE p.playlistId = playlist_id;
 END $$
+
 DELIMITER ;
+CALL getPlaylistSongs(1)
 ;
+
+-- Get songs with artist name
+DROP PROCEDURE IF EXISTS getSongs;
+DELIMITER $$
+CREATE PROCEDURE getSongs() 
+BEGIN
+	SELECT s.songId, title, releaseDate, duration, firstName, lastName FROM songs AS s
+    JOIN artistsong AS l ON s.songId = l.songId
+    JOIN artists AS a ON l.artistId = a.artistId;
+END $$
+
+DELIMITER ;
+CALL getSongs()
+;
+
+DROP PROCEDURE IF EXISTS getPlaylistsUser;
+DELIMITER $$
+CREATE PROCEDURE getPlaylistsUser(IN user_id INT) 
+BEGIN
+	SELECT * FROM playlists WHERE userId = user_id;
+END $$
+
+DELIMITER ;
+CALL getSongs()
+;
+
+DROP PROCEDURE IF EXISTS getSongsFromSearch;
+DELIMITER $$
+CREATE PROCEDURE getSongsFromSearch(IN searchParam VARCHAR(127)) 
+BEGIN
+	SELECT s.songId, title, releaseDate, duration, firstName, lastName FROM songs AS s
+    JOIN artistsong AS l ON s.songId = l.songId
+    JOIN artists AS a ON l.artistId = a.artistId
+    WHERE title LIKE searchParam;
+END $$
+
+DELIMITER ;
+CALL getSongsFromSearch("%F%");
+;
+
 
 /*
 	Delete procedures
@@ -88,6 +154,7 @@ CREATE PROCEDURE removeSongFromPlaylist(IN playlist_id INT, IN song_id INT)
 BEGIN
 	DELETE FROM playlistsong WHERE playlistId = playlist_id AND songId = song_id;
 END $$
-
+DELIMITER ;
+;
 
 

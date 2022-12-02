@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, session, redirect
+from flask import Flask, render_template, request, url_for, session, redirect, jsonify
 from flask_pymysql import MySQL
 import re
 import pymysql
@@ -35,13 +35,13 @@ def login():
         cursor = mysql.connection.cursor()
 
         cursor.execute('SELECT findUser(%s, %s) as foundUser', (email, phone,))
-        account = cursor.fetchone()
+        account = cursor.fetchone()[0]
 
         # If account exists in accounts table in out database
         if account:
             # Create session data, we can access this data in other routes
             session['loggedin'] = True
-            session['id'] = account[0]
+            session['id'] = account
             session['email'] = email
             # Redirect to home page
             return redirect(url_for('home'))
@@ -134,7 +134,7 @@ def home():
             return redirect(url_for('newplaylist'))
         cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
-            'SELECT * FROM playlists WHERE userId = %s', (session['id']))
+            'CALL getPlaylistsUser(%s)', (session['id']))
         
         playlists = list(cursor.fetchall())
         for p in playlists:
@@ -184,7 +184,7 @@ def newplaylist():
             status = request.form['status']
             print('MY USER', session['id'])
             cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
-            cursor.execute('INSERT INTO playlists VALUES (0, %s, %s, %s)',
+            cursor.execute('CALL createPlaylist(%s, %s, %s)',
                            (name, status, int(session['id'])))
             mysql.connection.commit()
              # Redirect to home page
@@ -200,32 +200,44 @@ Playlist Page
 
 """
 @app.route('/playlist/<playlist_id>', methods=['GET', 'POST'])
-def playlist(playlist_id = 0):
+def playlist(playlist_id):
     if 'loggedin' in session:
-        if request.method == 'POST' and 'add' in request.form:
-            song_id = request.form['add']
+        print(request.form)
+        songs = []
+        if request.method == 'POST' and 'searchText' in request.form:
+            print(request.form['searchText'])
+            searchTerm = '%' + request.form.get("searchText") + '%'
+            print(searchTerm)
             cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
-            cursor.execute('INSERT INTO playlistsong VALUES (%s, %s)',
+            cursor.execute('CALL getSongsFromSearch(%s)', (searchTerm))
+            songs = list(cursor.fetchall())
+
+        elif request.method == 'POST' and 'add' in request.form:
+            cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
+            song_id = request.form['add']
+            cursor.execute('CALL addSongPlaylistLink(%s, %s)',
                            (playlist_id, song_id))
             mysql.connection.commit()
         
-        if request.method == 'POST' and 'delete' in request.form:
+        elif request.method == 'POST' and 'delete' in request.form:
+            cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
             song_id = request.form['delete']
             cursor = mysql.connection.cursor()
-            cursor.execute('call removeSongFromPlaylist(%s, %s)',
+            cursor.execute('CALL removeSongFromPlaylist(%s, %s)',
                            (playlist_id, song_id))
             mysql.connection.commit()
-        cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
-        cursor.execute('SELECT * FROM songs')
-        songs = list(cursor.fetchall())
-        print(songs)
 
-        cursor.execute('call getPlaylistSongs(%s)', (playlist_id))
+        cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
+        cursor.execute('CALL getPlaylistSongs(%s)', (playlist_id))
         playlistsongs = list(cursor.fetchall())
 
-        print(playlistsongs)
+        if(len(songs) == 0):
+            cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
+            cursor.execute('CALL getSongs()')
+            songs = list(cursor.fetchall())    
 
-        return render_template('playlist.html', username=session['email'], songs = songs, playlistsongs = playlistsongs)
+        songs = [s for s in songs if s not in playlistsongs]
+        return render_template('playlist.html', songs = songs, playlistsongs = playlistsongs, playlistId = playlist_id)
     return redirect(url_for('login'))
 
 if __name__ == '__main__':

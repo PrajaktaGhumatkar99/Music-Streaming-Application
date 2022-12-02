@@ -204,3 +204,46 @@ body.loggedin {
 /*
     Home
 */
+
+/*
+    Playlist
+*/
+.songSearchBar {
+    font-size: 17px;
+  }
+
+  
+#albumCheck
+{
+  display:none;
+}
+
+#albumCheck:checked + #albumCheckBox
+{
+  background: #D8315B;
+  border: inset;
+}
+
+#albumCheckBox
+{
+  background: #f3f3f3;
+  border: outset;
+}
+
+
+#songCheck
+{
+  display:none;
+}
+
+#songCheck:checked + #songCheckBox
+{
+  background: #D8315B;
+  border: inset;
+}
+
+#songCheckBox
+{
+  background: #f3f3f3;
+  border: outset;
+}
