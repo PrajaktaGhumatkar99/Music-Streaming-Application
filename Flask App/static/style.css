@@ -87,7 +87,7 @@ body {
 .navtop div {
     display: flex;
     margin: 0 auto;
-    width: 1000px;
+    width: 75%;
     height: 100%;
 }
 .navtop div h1, .navtop div a {
@@ -115,10 +115,10 @@ body {
     color: #eaebed;
 }
 body.loggedin {
-    background-color: #f3f4f7;
+    background-color: #1E1B18;
 }
 .content {
-    width: 1000px;
+    width: 75%;
     margin: 0 auto;
 }
 .content h2 {
@@ -132,7 +132,7 @@ body.loggedin {
     box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.1);
     margin: 25px 0;
     padding: 25px;
-  background-color: #fff;
+    background-color: #fff;
 }
 .content > p table td, .content > div table td {
   padding: 5px;
@@ -163,7 +163,6 @@ body.loggedin {
 .styled-table thead tr {
     background-color: #D8315B;
     color: #ffffff;
-    text-align: left;
 }
 
 .styled-table th,
@@ -176,18 +175,8 @@ body.loggedin {
     color: #ffffff;
 }
 
-.styled-table tbody tr a{
-    color: #1E1B18; 
-    text-decoration: none;
-    border-bottom: 1px solid #dddddd;
-}
-
 .styled-table tbody tr:nth-of-type(even) {
     background-color: #f3f3f3;
-}
-
-.styled-table tbody tr:last-of-type {
-    border-bottom: 2px solid #D8315B;
 }
 
 .styled-table tbody tr.active-row {
@@ -204,46 +193,28 @@ body.loggedin {
 /*
     Home
 */
+.newplaylistbutton {
+    margin-bottom: 10px;
+    background-color: #D8315B ;
+    color: #f3f3f3;
+}
 
 /*
     Playlist
 */
-.songSearchBar {
-    font-size: 17px;
+.playlistlayout {
+    display: flex;
+    flex-wrap: wrap;
   }
+.playlistlayout * { box-sizing: border-box; }
 
-  
-#albumCheck
-{
-  display:none;
+.song { 
+    width: 50%;
+    padding-left: 10px; 
+    padding-right: 10px; 
 }
-
-#albumCheck:checked + #albumCheckBox
-{
-  background: #D8315B;
-  border: inset;
-}
-
-#albumCheckBox
-{
-  background: #f3f3f3;
-  border: outset;
-}
-
-
-#songCheck
-{
-  display:none;
-}
-
-#songCheck:checked + #songCheckBox
-{
-  background: #D8315B;
-  border: inset;
-}
-
-#songCheckBox
-{
-  background: #f3f3f3;
-  border: outset;
+.playlist {
+    width: 50%;
+    padding-left: 10px; 
+    padding-right: 10px;  
 }

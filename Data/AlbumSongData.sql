@@ -15,3 +15,16 @@ INSERT INTO albumsong VALUES(2, 11);
 INSERT INTO albumsong VALUES(2, 12);
 INSERT INTO albumsong VALUES(2, 13);
 INSERT INTO albumsong VALUES(2, 14);
+
+INSERT INTO albumsong VALUES(3, 15);
+INSERT INTO albumsong VALUES(3, 16);
+INSERT INTO albumsong VALUES(3, 17);
+INSERT INTO albumsong VALUES(3, 18);
+INSERT INTO albumsong VALUES(3, 19);
+INSERT INTO albumsong VALUES(3, 20);
+INSERT INTO albumsong VALUES(3, 21);
+INSERT INTO albumsong VALUES(3, 22);
+INSERT INTO albumsong VALUES(3, 23);
+INSERT INTO albumsong VALUES(3, 24);
+INSERT INTO albumsong VALUES(3, 25);
+INSERT INTO albumsong VALUES(3, 26);

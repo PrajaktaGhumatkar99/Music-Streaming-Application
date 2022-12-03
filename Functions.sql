@@ -1,7 +1,7 @@
 USE streamingdatabase;
 
+-- Find out if user exists from email and phone number
 DROP FUNCTION IF EXISTS findUser;
-
 DELIMITER $$
 CREATE FUNCTION findUser(email_p VARCHAR(128), phone_p VARCHAR(10)) 
 RETURNS INT
@@ -23,12 +23,11 @@ BEGIN
     
 	RETURN uid_found;
 END $$
-
 DELIMITER ;
 ; 
 
+-- Count the number of songs in a playlist 
 DROP FUNCTION IF EXISTS countSongsInPlaylist;
-
 DELIMITER $$
 CREATE FUNCTION countSongsInPlaylist(playlist_id INT) 
 RETURNS INT
@@ -39,7 +38,18 @@ BEGIN
     SELECT count(*) INTO song_count FROM playlistsong WHERE playlistId = playlist_id;
 	RETURN song_count;
 END $$
-
 DELIMITER ;
 SELECT countSongsInPlaylist(1) as a;
 ; 
+
+-- Add the total duration of all songs in playlist
+DROP FUNCTION IF EXISTS findPlaylistDuration;
+DELIMITER $$
+CREATE FUNCTION findPlaylistDuration(playlist_id INT)
+RETURNS INT
+DETERMINISTIC
+READS SQL DATA
+BEGIN
+	DECLARE playlist_duration TIME;
+	RETURN playlist_duration;
+END $$

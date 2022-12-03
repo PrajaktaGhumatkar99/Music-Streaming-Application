@@ -92,7 +92,7 @@ DROP PROCEDURE IF EXISTS getPlaylistSongs;
 DELIMITER $$
 CREATE PROCEDURE getPlaylistSongs(IN playlist_id INT) 
 BEGIN
-	SELECT s.songId, title, releaseDate, duration, firstName, lastName FROM songs AS s
+	SELECT s.songId, title, releaseDate, duration, name FROM songs AS s
     JOIN playlistsong AS p ON s.songId = p.songId
     JOIN artistsong AS l ON s.songId = l.songId
     JOIN artists AS a ON l.artistId = a.artistId
@@ -108,7 +108,7 @@ DROP PROCEDURE IF EXISTS getSongs;
 DELIMITER $$
 CREATE PROCEDURE getSongs() 
 BEGIN
-	SELECT s.songId, title, releaseDate, duration, firstName, lastName FROM songs AS s
+	SELECT s.songId, title, releaseDate, duration, name FROM songs AS s
     JOIN artistsong AS l ON s.songId = l.songId
     JOIN artists AS a ON l.artistId = a.artistId;
 END $$
@@ -132,7 +132,7 @@ DROP PROCEDURE IF EXISTS getSongsFromSearch;
 DELIMITER $$
 CREATE PROCEDURE getSongsFromSearch(IN searchParam VARCHAR(127)) 
 BEGIN
-	SELECT s.songId, title, releaseDate, duration, firstName, lastName FROM songs AS s
+	SELECT s.songId, title, releaseDate, duration, name FROM songs AS s
     JOIN artistsong AS l ON s.songId = l.songId
     JOIN artists AS a ON l.artistId = a.artistId
     WHERE title LIKE searchParam;

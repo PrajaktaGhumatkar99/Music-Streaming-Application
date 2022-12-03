@@ -1,7 +1,12 @@
 from flask import Flask, render_template, request, url_for, session, redirect, jsonify
+from datetime import datetime, timedelta
 from flask_pymysql import MySQL
 import re
 import pymysql
+import random
+import sys
+from faker import Faker
+
 
 app = Flask(__name__)
 
@@ -13,6 +18,19 @@ pymysql_connect_kwargs = {'user': 'root', 'password': 'T5zh22qa!', 'host': 'loca
 
 app.config['pymysql_kwargs'] = pymysql_connect_kwargs
 mysql = MySQL(app)
+
+def create_fake_users(n):
+    """Generate fake users."""
+    faker = Faker()
+    fake_users = []
+    for i in range(n):
+        fake_users.append({'name': faker.name(),
+        'age':random.randint(20, 80),
+            'address':faker.address().replace('\n', ', '),
+            'phone':faker.phone_number(),
+            'email':faker.email()})
+    return fake_users
+
 
 
 """
@@ -125,6 +143,15 @@ def register():
 Home Page
 
 """
+def calculateTotalDuration(playlistsongs):
+    totalTime = 0
+    for p in playlistsongs:
+        if not totalTime:
+            totalTime = p['duration']
+        else:
+            totalTime += p['duration']
+    return totalTime
+
 @app.route('/home', methods=['GET', 'POST'])
 def home():
     # Check if user is loggedin
@@ -132,16 +159,24 @@ def home():
         if(request.method == 'POST' and 'new' in request.form):
             print('clicked')
             return redirect(url_for('newplaylist'))
+        
+        if(request.method == 'POST' and 'click' in request.form):
+            playlistId = request.form['click']
+            return redirect(url_for('playlist', playlist_id=playlistId))
+
         cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
-        cursor.execute(
-            'CALL getPlaylistsUser(%s)', (session['id']))
+        cursor.execute('CALL getPlaylistsUser(%s)', (session['id']))
         
         playlists = list(cursor.fetchall())
         for p in playlists:
             cursor.execute('SELECT countSongsInPlaylist(%s) as cnt', (p['playlistId']))
             song_count = cursor.fetchone()
             p['songs'] = song_count['cnt']
-        print(playlists)
+
+            cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
+            cursor.execute('CALL getPlaylistSongs(%s)', (p['playlistId']))
+            playlistsongs = list(cursor.fetchall())
+            p['duration'] = calculateTotalDuration(playlistsongs)
         return render_template('home.html', username=session['email'], playlists = playlists)
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
@@ -203,7 +238,7 @@ Playlist Page
 def playlist(playlist_id):
     if 'loggedin' in session:
         print(request.form)
-        songs = []
+
         if request.method == 'POST' and 'searchText' in request.form:
             print(request.form['searchText'])
             searchTerm = '%' + request.form.get("searchText") + '%'
@@ -212,14 +247,14 @@ def playlist(playlist_id):
             cursor.execute('CALL getSongsFromSearch(%s)', (searchTerm))
             songs = list(cursor.fetchall())
 
-        elif request.method == 'POST' and 'add' in request.form:
+        if request.method == 'POST' and 'add' in request.form:
             cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
             song_id = request.form['add']
             cursor.execute('CALL addSongPlaylistLink(%s, %s)',
                            (playlist_id, song_id))
             mysql.connection.commit()
         
-        elif request.method == 'POST' and 'delete' in request.form:
+        if request.method == 'POST' and 'delete' in request.form:
             cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
             song_id = request.form['delete']
             cursor = mysql.connection.cursor()
@@ -231,12 +266,17 @@ def playlist(playlist_id):
         cursor.execute('CALL getPlaylistSongs(%s)', (playlist_id))
         playlistsongs = list(cursor.fetchall())
 
-        if(len(songs) == 0):
-            cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
-            cursor.execute('CALL getSongs()')
-            songs = list(cursor.fetchall())    
+        cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
+        cursor.execute('CALL getSongs()')
+        songs = list(cursor.fetchall())    
 
         songs = [s for s in songs if s not in playlistsongs]
+        for s in songs:
+            s['artist'] = s['name']
+
+        if request.method == 'POST' and 'back' in request.form:
+            print(request.form['back'])
+
         return render_template('playlist.html', songs = songs, playlistsongs = playlistsongs, playlistId = playlist_id)
     return redirect(url_for('login'))
 

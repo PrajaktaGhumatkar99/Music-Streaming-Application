@@ -6,27 +6,43 @@
 
 {% block content %}
 <div>
-    <table class="styled-table"> 
+    <form>
+        <form action="" method="post"> 
+            <button name = "new" class = "newplaylistbutton">New Playlist</button> 
+        </form>
+    </form>
+    <table id="playlists" class="styled-table table-striped">
         <thead>
             <tr>
-            <th>ID</th> 
-            <th>Name</th> 
-            <th>Tracks</th> 
-            <th> 
-                <a href="{{ url_for('newplaylist')}}" >New Playlist</a>
-            </th>
+                <th>ID</th> 
+                <th>Name</th> 
+                <th>Tracks</th> 
+                <th>Duration</th> 
+                <td></td>
             </tr>
         </thead>
         <tbody>
             {%for i in playlists%}
-            <tr style="cursor: pointer;">
+            <tr>
                 <td>{{i['playlistId']}}</td>
                 <td>{{i['name']}}</td>
                 <td>{{i['songs']}}</td>
-                <td><a href="{{ url_for('playlist', playlist_id=i['playlistId'])}}"> View </a></td>
+                <td>{{i['duration']}}</td>
+                <td>
+                    <form action = "" method="post">
+                        <button name = "click" value = "{{i['playlistId']}}"> View </button>
+                    </form>
+                </td>
             </tr>
             {%endfor%}
         </tbody>
     </table>
 </div>
+{% endblock %}
+{% block scripts %}
+<script>
+$(document).ready(function () {
+    var table = $('#playlists').DataTable();
+});
+</script>
 {% endblock %}

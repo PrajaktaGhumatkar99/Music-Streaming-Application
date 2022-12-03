@@ -4,71 +4,96 @@
 {% block pagetitle %}Playlist{% endblock %}
 
 {% block content %}
-<div class="card">
-<h1> Add </h1>
-<div class="row">
-    <form action="" method="post">
-        <input type = "text" name ="searchText">
-        <button name="search" >Search</button>
-    </form>
-</div>
-<table class="styled-table"> 
-    <thead>
-        <tr>
-           <th>ID</th> 
-           <th>Title</th>
-           <th>Artist</th>  
-           <th>Release</th> 
-           <th>Duration</th> 
-           <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        {%for i in songs%}
-        <tr >
-                <td>{{i['songId']}}</td>
-                <td>{{i['title']}}</td>
-                <td>{{i['firstName']}} {{i['lastName']}}</td>
-                <td>{{i['releaseDate']}}</td>
-                <td>{{i['duration']}}</td>
-                <td> 
+<div class="playlistlayout">
+    <div class = "song">
+        <h1> Add </h1>
+        <table id="song" class="styled-table table-striped">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Artist</th>
+                <th>Release</th>
+                <th>Duration</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for s in songs %}
+                <tr>
+                <td>{{ s['title'] }}</td>
+                <td>{{ s['artist'] }}</td>
+                <td>{{ s['releaseDate'] }}</td>
+                <td>{{ s['duration'] }}</td>
+                <td>
                     <form action="" method="post">
-                        <button name="add" value="{{i['songId']}}">Add</button>
+                        <button name = "add" value = "{{s['songId']}}"> Add </button>
                     </form>
                 </td>
-        </tr>
-        {%endfor%}
-    </tbody>
-</table>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class = "playlist">
+        <h1> Playlist </h1>
+        <table id="playlist" class="styled-table table-striped">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Artist</th>
+                <th>Release</th>
+                <th>Duration</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for s in playlistsongs %}
+                <tr>
+                <td>{{ s['title'] }}</td>
+                <td>{{ s['artist'] }}</td>
+                <td>{{ s['releaseDate'] }}</td>
+                <td>{{ s['duration'] }}</td>
+                <td>
+                    <form action="" method="post">
+                        <button name = "delete" value = "{{s['songId']}}"> Delete </button>
+                    </form>
+                </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
-<h1> Playlist </h1>
-<table class="styled-table"> 
-    <thead>
-        <tr>
-            <th>ID</th> 
-            <th>Title</th>
-            <th>Artist</th>   
-            <th>Release</th> 
-            <th>Duration</th> 
-            <th></th>
-        </tr>
-    </thead>
-    <tbody class = "live-search">
-        {%for i in playlistsongs%}
-        <tr >
-                <td>{{i['songId']}}</td>
-                <td>{{i['title']}}</td>
-                <td>{{i['firstName']}} {{i['lastName']}}</td>
-                <td>{{i['releaseDate']}}</td>
-                <td>{{i['duration']}}</td>
-                <td> 
-                    <form action="" method="post">
-                        <button name="delete" value="{{i['songId']}}">Delete</button>
-                    </form>
-                </td>
-        </tr>
-        {%endfor%}
-    </tbody>
-</table>
-</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function () {
+    $('#song').DataTable({
+        columns: [
+          {searchable: true},
+          {searchable: true},
+          {orderable: false, searchable: false},
+          {orderable: false, searchable: false},
+          null
+        ],
+        "lengthMenu": [10]
+    });
+});
+</script>
+<script>
+    $(document).ready(function () {
+        var table = $('#playlist').DataTable({
+        columns: [
+            {data: 'name'},
+            {data: 'age'},
+            {data: 'address'},
+            {data: 'phone'},
+            {data: 'email'}
+        ],
+        "lengthMenu": [10]
+        });
+});
+</script>
 {% endblock %}
