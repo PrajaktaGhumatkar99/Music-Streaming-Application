@@ -31,3 +31,16 @@ INSERT INTO songs VALUES(23, "Scrape It Off(feat. Lil Uzi Vert & Don Toliver)", 
 INSERT INTO songs VALUES(24, "Hear Me Clearly(feat. Nigo)", "2022-04-22", "2:21");
 INSERT INTO songs VALUES(25, "Open Air", "2022-04-22", "2:12");
 INSERT INTO songs VALUES(26, "I Pray For You(feat. Labrinth & MALICE)", "2022-04-22", "4:21");
+
+-- Post
+INSERT INTO songs VALUES(27, "Army of Me", "1995-06-13", "3:54");
+INSERT INTO songs VALUES(28, "Hyperballad", "1995-06-13", "5:21");
+INSERT INTO songs VALUES(29, "The Modern Things", "1995-06-13", "4:09");
+INSERT INTO songs VALUES(30, "It's Oh So Quiet", "1995-06-13", "3:37");
+INSERT INTO songs VALUES(31, "Enjoy", "1995-06-13", "3:54");
+INSERT INTO songs VALUES(32, "You've Been Flirting Again", "1995-06-13", "2:29");
+INSERT INTO songs VALUES(33, "Isobel", "1995-06-13", "5:46");
+INSERT INTO songs VALUES(34, "Possibly Maybe", "1995-06-13", "5:05");
+INSERT INTO songs VALUES(35, "I Miss You", "1995-06-13", "3:59");
+INSERT INTO songs VALUES(36, "Cover Me", "1995-06-13", "2:06");
+INSERT INTO songs VALUES(37, "Headphones", "1995-06-13", "5:40");

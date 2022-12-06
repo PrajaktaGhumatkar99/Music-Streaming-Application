@@ -31,3 +31,16 @@ INSERT INTO artistsong VALUES(2, 23);
 INSERT INTO artistsong VALUES(2, 24);
 INSERT INTO artistsong VALUES(2, 25);
 INSERT INTO artistsong VALUES(2, 26);
+
+-- Bjork
+INSERT INTO artistsong VALUES(3, 27);
+INSERT INTO artistsong VALUES(3, 28);
+INSERT INTO artistsong VALUES(3, 29);
+INSERT INTO artistsong VALUES(3, 30);
+INSERT INTO artistsong VALUES(3, 31);
+INSERT INTO artistsong VALUES(3, 32);
+INSERT INTO artistsong VALUES(3, 33);
+INSERT INTO artistsong VALUES(3, 34);
+INSERT INTO artistsong VALUES(3, 35);
+INSERT INTO artistsong VALUES(3, 36);
+INSERT INTO artistsong VALUES(3, 37);
