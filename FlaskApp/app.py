@@ -142,18 +142,18 @@ def calculateTotalDuration(playlistsongs):
 def home():
     # Check if user is loggedin
     if 'loggedin' in session:
-        if(request.method == 'POST' and 'new' in request.form):
+        if request.method == 'POST' and 'new' in request.form:
             print('clicked')
             return redirect(url_for('newplaylist'))
         
-        if(request.method == 'POST' and 'click' in request.form):
+        if request.method == 'POST' and 'click' in request.form:
             playlistId = request.form['click']
             return redirect(url_for('playlist', playlist_id=playlistId))
 
         cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
         cursor.execute('CALL getPlaylistsUser(%s)', (session['id']))
-        
         playlists = list(cursor.fetchall())
+
         for p in playlists:
             cursor.execute('SELECT countSongsInPlaylist(%s) as cnt', (p['playlistId']))
             song_count = cursor.fetchone()
@@ -198,6 +198,7 @@ New Playlist Page
 """
 @app.route('/newplaylist', methods=['GET', 'POST'])
 def newplaylist():
+    status = ['Public', 'Private']
     # Check if user is loggedin
     if 'loggedin' in session:
         if request.method == 'POST' and 'name' in request.form:
@@ -210,7 +211,7 @@ def newplaylist():
             mysql.connection.commit()
              # Redirect to home page
             return redirect(url_for('home'))
-        return render_template('newplaylist.html', username=session['email'])
+        return render_template('newplaylist.html', username=session['email'], status = status)
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
 
@@ -225,21 +226,6 @@ def playlist(playlist_id):
     if 'loggedin' in session:
         print(request.form)
 
-        if request.method == 'POST' and 'searchText' in request.form:
-            print(request.form['searchText'])
-            searchTerm = '%' + request.form.get("searchText") + '%'
-            print(searchTerm)
-            cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
-            cursor.execute('CALL getSongsFromSearch(%s)', (searchTerm))
-            songs = list(cursor.fetchall())
-
-        if request.method == 'POST' and 'add' in request.form:
-            cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
-            song_id = request.form['add']
-            cursor.execute('CALL addSongPlaylistLink(%s, %s)',
-                           (playlist_id, song_id))
-            mysql.connection.commit()
-        
         if request.method == 'POST' and 'delete' in request.form:
             cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
             song_id = request.form['delete']
@@ -256,14 +242,41 @@ def playlist(playlist_id):
         cursor.execute('CALL getSongs()')
         songs = list(cursor.fetchall())    
 
+        print(playlistsongs)
+
+        return render_template('playlist.html', songs = songs, playlistsongs = playlistsongs, playlistId = playlist_id)
+    return redirect(url_for('login'))
+
+"""
+
+Songs Page
+
+"""
+@app.route('/songs/<playlist_id>', methods=['GET', 'POST'])
+def songs(playlist_id):
+    if 'loggedin' in session:
+        print(request.form)
+        if request.method == 'POST' and 'add' in request.form:
+            cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
+            song_id = request.form['add']
+            cursor.execute('CALL addSongPlaylistLink(%s, %s)',
+                           (playlist_id, song_id))
+            mysql.connection.commit()
+        
+        cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
+        cursor.execute('CALL getPlaylistSongs(%s)', (playlist_id))
+        playlistsongs = list(cursor.fetchall())
+
+        cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
+        cursor.execute('CALL getSongs()')
+        songs = list(cursor.fetchall())    
+
         songs = [s for s in songs if s not in playlistsongs]
-        for s in songs:
-            s['artist'] = s['name']
 
         if request.method == 'POST' and 'back' in request.form:
             print(request.form['back'])
 
-        return render_template('playlist.html', songs = songs, playlistsongs = playlistsongs, playlistId = playlist_id)
+        return render_template('songs.html', songs = songs, playlistId = playlist_id)
     return redirect(url_for('login'))
 
 if __name__ == '__main__':

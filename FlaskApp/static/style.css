@@ -1,9 +1,10 @@
+/*
+    Register/ Login
+*/
 * {
     box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, "segoe ui", roboto, oxygen, ubuntu, cantarell, "fira sans", "droid sans", "helvetica neue", Arial, sans-serif;
+    font-family: Arial;
     font-size: 16px;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
 body {
     background-color: #1E1B18;
@@ -11,8 +12,7 @@ body {
 }
 .login, .register {
     width: 400px;
-    background-color: #ffffff;
-    box-shadow: 0 0 9px 0 rgba(0, 0, 0, 0.3);
+    background-color: #FFFAFF;
     margin: 100px auto;
 }
 .login h1, .register h1 {
@@ -55,7 +55,7 @@ body {
     background-color: #D8315B;
     color: #ffffff;
 }
-.login form input[type="password"], .login form input[type="text"], .login form input[type="email"], .register form input[type="password"], .register form input[type="text"], 
+.login form input[type="text"], .login form input[type="email"], .register form input[type="text"], 
 .register form input[type="email"], .register form select{
     width: 310px;
     height: 50px;
@@ -72,12 +72,24 @@ body {
     cursor: pointer;
     font-weight: bold;
     color: #ffffff;
-    transition: background-color 0.2s;
 }
 .login form input[type="submit"]:hover, .register form input[type="submit"]:hover {
     background-color: #D8315B;
-    transition: background-color 0.2s;
 }
+
+/*
+    Home
+*/
+.newplaylistbutton {
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: #D8315B ;
+    border: 0;
+    cursor: pointer;
+    font-weight: bold;
+    color: #FFFAFF;
+}
+
 .navtop {
     background-color: #1E1B18 ;
     height: 60px;
@@ -147,6 +159,17 @@ body.loggedin {
   margin: 0 0 10px 0;
 }
 
+.view{
+    background-color: #3E92CC;
+    border: 0;
+    cursor: pointer;
+    font-weight: bold;
+    color: #FFFAFF;
+}
+
+
+
+
 /*
     Table styling
 */
@@ -161,6 +184,7 @@ body.loggedin {
 }
 
 .styled-table thead tr {
+    width: 500px;
     background-color: #D8315B;
     color: #ffffff;
 }
@@ -187,34 +211,52 @@ body.loggedin {
 /*
     Profile Styling
 */
-
-
-
-/*
-    Home
-*/
-.newplaylistbutton {
-    margin-bottom: 10px;
-    background-color: #D8315B ;
-    color: #f3f3f3;
+.profile {
+    align-content: center;
 }
+.profile h1 {
+    text-align: center;
+}
+
 
 /*
     Playlist
 */
-.playlistlayout {
-    display: flex;
-    flex-wrap: wrap;
-  }
-.playlistlayout * { box-sizing: border-box; }
-
 .song { 
     width: 50%;
     padding-left: 10px; 
     padding-right: 10px; 
 }
 .playlist {
-    width: 50%;
+    width: 100%;
     padding-left: 10px; 
     padding-right: 10px;  
+}
+
+.playlistlayout .links{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 15px;
+}
+.playlistlayout .links a{
+    color: #adb2ba;
+    text-decoration: none;
+    padding: 0 10px 10px 10px;
+    font-weight: bold;
+}
+.playlistlayout .links a:hover{
+    color: #9da3ac;
+}
+.playlistlayout .links a.active{
+    border-bottom: 3px solid #D8315B ;
+    color: #D8315B ;
+}
+
+.playlistlayout button {
+    background-color: #3E92CC;
+    border: 0;
+    cursor: pointer;
+    font-weight: bold;
+    color: #FFFAFF;
 }

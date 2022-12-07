@@ -6,12 +6,12 @@
 {% block content %}
 <div class="playlistlayout">
     <div class="links">
-        <a href="{{ url_for('playlist', playlist_id=playlistId)}}" class="active">Playlist</a>
-        <a href="{{ url_for('songs', playlist_id=playlistId) }}" >Songs</a>
+        <a href="{{ url_for('playlist', playlist_id=playlistId)}}" >Playlist</a>
+        <a href="{{ url_for('songs', playlist_id=playlistId) }}" class="active">Songs</a>
     </div>
     <div class = "playlist">
-        <h1> Playlist </h1>
-        <table id="playlist" class="styled-table table-striped">
+        <h1> Songs </h1>
+        <table id="song" class="styled-table table-striped">
             <thead>
             <tr>
                 <th>Title</th>
@@ -23,16 +23,16 @@
             </tr>
             </thead>
             <tbody>
-            {% for s in playlistsongs %}
+            {% for s in songs %}
                 <tr>
                 <td>{{ s['title'] }}</td>
-                <td>{{ s['name'] }}</td>
+                <td>{{ s['artist'] }}</td>
                 <td>{{ s['albumTitle'] }}</td>
                 <td>{{ s['releaseDate'] }}</td>
                 <td>{{ s['duration'] }}</td>
                 <td>
                     <form action="" method="post">
-                        <button name = "delete" value = "{{s['songId']}}"> Delete </button>
+                        <button name = "add" value = "{{s['songId']}}"> Add </button>
                     </form>
                 </td>
                 </tr>
@@ -47,7 +47,7 @@
 {% block scripts %}
 <script>
 $(document).ready(function () {
-    $('#playlist').DataTable({
+    $('#song').DataTable({
         columns: [
           {searchable: true},
           {searchable: true},

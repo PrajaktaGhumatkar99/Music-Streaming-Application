@@ -8,28 +8,28 @@
 	</head>
 	<body>
 		<div class="register">
-			<h1>Register</h1>
+			<h1 >Register</h1>
 			<div class="links">
-				<a href="{{ url_for('login') }}">Login</a>
-				<a href="{{ url_for('register') }}" class="active">Register</a>
+				<a href="{{ url_for('songs') }}">Login</a>
+				<a href="{{ url_for('playlist') }}" class="active">Register</a>
 			</div>
 			<form action="{{ url_for('register') }}" method="post" autocomplete="off">
 				<label for="firstName">
 					<i class="fas fa-user"></i>
 				</label>
-				<input type="text" name="firstName" placeholder="First Name" id="firstName" required>
+				<input type="text" name="firstName" placeholder="First Name"  required>
 				<label for="firstName">
 					<i class="fas fa-user"></i>
 				</label>
-				<input type="text" name="lastName" placeholder="Last Name" id="lastName" required>
+				<input type="text" name="lastName" placeholder="Last Name"  required>
 				<label for="firstName">
 					<i class="fas fa-envelope"></i>
 				</label>
-				<input type="email" name="email" placeholder="Email" id="email" required>
+				<input type="email" name="email" placeholder="Email"  required>
 				<label for="firstName">
 					<i class="fas fa-phone"></i>
 				</label>
-				<input type="text" name="phone" placeholder="Phone Number" id="phone" required>
+				<input type="text" name="phone" placeholder="Phone Number" required>
 				<span></span>
 				<label for="plan">
 					<i class="fas fa-money-bill"></i>

@@ -5,17 +5,17 @@
 {% block pagetitle %}Home{% endblock %}
 
 {% block content %}
-<div>
-    <form>
+<div class="home">
+    <div class="content-top">
         <form action="" method="post"> 
             <button name = "new" class = "newplaylistbutton">New Playlist</button> 
         </form>
-    </form>
+    </div>
     <table id="playlists" class="styled-table table-striped">
         <thead>
             <tr>
-                <th>ID</th> 
                 <th>Name</th> 
+                <th>Status</th> 
                 <th>Tracks</th> 
                 <th>Duration</th> 
                 <td></td>
@@ -24,13 +24,13 @@
         <tbody>
             {%for i in playlists%}
             <tr>
-                <td>{{i['playlistId']}}</td>
                 <td>{{i['name']}}</td>
+                <td>{{i['status']}}</td>
                 <td>{{i['songs']}}</td>
                 <td>{{i['duration']}}</td>
                 <td>
                     <form action = "" method="post">
-                        <button name = "click" value = "{{i['playlistId']}}"> View </button>
+                        <button class = "view" name = "click" value = "{{i['playlistId']}}"> View </button>
                     </form>
                 </td>
             </tr>
@@ -42,7 +42,16 @@
 {% block scripts %}
 <script>
 $(document).ready(function () {
-    var table = $('#playlists').DataTable();
+    var table = $('#playlists').DataTable({
+        columns: [
+          {searchable: true},
+          {searchable: true},
+          {orderable: false},
+          {orderable: false, searchable: false},
+          null
+        ],
+        "lengthChange": false
+    });
 });
 </script>
 {% endblock %}

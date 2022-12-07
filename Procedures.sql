@@ -92,10 +92,12 @@ DROP PROCEDURE IF EXISTS getPlaylistSongs;
 DELIMITER $$
 CREATE PROCEDURE getPlaylistSongs(IN playlist_id INT) 
 BEGIN
-	SELECT s.songId, title, releaseDate, duration, name FROM songs AS s
+	SELECT s.songId, s.title, releaseDate, s.duration, name, c.title as albumTitle FROM songs AS s
     JOIN playlistsong AS p ON s.songId = p.songId
     JOIN artistsong AS l ON s.songId = l.songId
     JOIN artists AS a ON l.artistId = a.artistId
+    JOIN albumsong AS b ON s.songId = b.songId
+    JOIN albums as c ON b.albumId = c.albumId
     WHERE p.playlistId = playlist_id;
 END $$
 
@@ -108,9 +110,11 @@ DROP PROCEDURE IF EXISTS getSongs;
 DELIMITER $$
 CREATE PROCEDURE getSongs() 
 BEGIN
-	SELECT s.songId, title, releaseDate, duration, name FROM songs AS s
+	SELECT s.songId, s.title, releaseDate, s.duration, name, c.title as albumTitle FROM songs AS s
     JOIN artistsong AS l ON s.songId = l.songId
-    JOIN artists AS a ON l.artistId = a.artistId;
+    JOIN artists AS a ON l.artistId = a.artistId
+    JOIN albumsong AS b ON s.songId = b.songId
+    JOIN albums as c ON b.albumId = c.albumId;
 END $$
 
 DELIMITER ;
@@ -125,7 +129,6 @@ BEGIN
 END $$
 
 DELIMITER ;
-CALL getSongs()
 ;
 
 DROP PROCEDURE IF EXISTS getSongsFromSearch;

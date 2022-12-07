@@ -6,11 +6,21 @@
 {% block content %}
 <body>
     <div>
-        <div class="login">
+        <div class="register">
             <h1>New Playlist</h1>
-            <form action="{{ url_for('newplaylist') }}" method="post">
+            <form action="" method="post">
+                <label for="firstName">
+					<i class="fas fa-user"></i>
+				</label>
                 <input type="text" name="name" placeholder="Name" id="name" required>
-                <input type="text" name="status" placeholder="Status" id="status" required>
+                <label for="firstName">
+					<i class="fas globe"></i>
+				</label>
+                <select name="status" required>
+					{% for s in status %}
+						<option value = "{{s}}"> {{s}}</option>
+					{% endfor %}
+				</select>
                 <div class="msg">{{ msg }}</div>
                 <input type="submit" value="Create">
             </form>
