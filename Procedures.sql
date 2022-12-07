@@ -55,6 +55,7 @@ DELIMITER ;
 	Get Procedures
 */
 
+
 -- Get payment plan information
 DROP PROCEDURE IF EXISTS getPaymentPlans;
 DELIMITER $$
@@ -121,6 +122,7 @@ DELIMITER ;
 CALL getSongs()
 ;
 
+-- Get playlistsby used Id
 DROP PROCEDURE IF EXISTS getPlaylistsUser;
 DELIMITER $$
 CREATE PROCEDURE getPlaylistsUser(IN user_id INT) 
@@ -131,6 +133,7 @@ END $$
 DELIMITER ;
 ;
 
+-- Get songs from a search parameter using %
 DROP PROCEDURE IF EXISTS getSongsFromSearch;
 DELIMITER $$
 CREATE PROCEDURE getSongsFromSearch(IN searchParam VARCHAR(127)) 
@@ -143,6 +146,21 @@ END $$
 
 DELIMITER ;
 CALL getSongsFromSearch("%F%");
+;
+
+/*
+	Update procedures
+*/
+DROP PROCEDURE IF EXISTS editPlaylist;
+DELIMITER $$
+CREATE PROCEDURE editPlaylist(IN name_p VARCHAR(45), IN status_p VARCHAR(64), IN playlist_id INT) 
+BEGIN
+	UPDATE playlists 
+		SET name = name_p, status = status_p 
+	WHERE playlistId = playlist_id;
+END $$
+
+DELIMITER ;
 ;
 
 

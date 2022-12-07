@@ -7,12 +7,12 @@
 <body>
     <div>
         <div class="register">
-            <h1>New Playlist</h1>
+            <h1>Edit Playlist</h1>
             <form action="" method="post">
-                <label>
+                <label for="firstName">
 					<i class="fas fa-user"></i>
 				</label>
-                <input type="text" name="name" placeholder="Name" id="name" required>
+                <input type="text" name="name" placeholder="Name" id="name" value = {{name}} required>
                 <label>
 					<i class="fas fa-globe"></i>
 				</label>
@@ -22,7 +22,7 @@
 					{% endfor %}
 				</select>
                 <div class="msg">{{ msg }}</div>
-                <input type="submit" value="Create">
+                <input type="submit" value="Edit">
             </form>
         </div>
     </div>

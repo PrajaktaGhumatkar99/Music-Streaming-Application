@@ -10,7 +10,10 @@
         <a href="{{ url_for('songs', playlist_id=playlistId) }}" >Songs</a>
     </div>
     <div class = "playlist">
-        <h1> Playlist </h1>
+        <h1> {{name}} </h1>
+        <form action="" method="post">
+            <button name = "edit" > Edit </button>
+        </form>
         <table id="playlist" class="styled-table table-striped">
             <thead>
             <tr>

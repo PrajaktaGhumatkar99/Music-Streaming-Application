@@ -53,3 +53,24 @@ BEGIN
 	DECLARE playlist_duration TIME;
 	RETURN playlist_duration;
 END $$
+
+DELIMITER ;
+; 
+
+
+-- Get name of playlist from playlist id
+DROP FUNCTION IF EXISTS getPlaylistName;
+DELIMITER $$
+CREATE FUNCTION getPlaylistName(playlist_id INT)
+RETURNS VARCHAR(128)
+DETERMINISTIC
+READS SQL DATA
+BEGIN
+	DECLARE playlist_name VARCHAR(128);
+    SELECT name INTO playlist_name FROM playlists WHERE playlistId = playlist_id;
+	RETURN playlist_name;
+END $$
+
+DELIMITER ;
+SELECT getPlaylistName(1);
+; 

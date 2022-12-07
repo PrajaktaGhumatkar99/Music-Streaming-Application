@@ -218,6 +218,34 @@ def newplaylist():
 
 """
 
+Edit Playlist Page
+
+"""
+@app.route('/editplaylist/<playlist_id>', methods=['GET', 'POST'])
+def editplaylist(playlist_id):
+    status = ['Public', 'Private']
+    # Check if user is loggedin
+    if 'loggedin' in session:
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT getPlaylistName(%s)', (playlist_id))
+        playlistname = cursor.fetchone()[0]
+
+        if request.method == 'POST' and 'name' in request.form:
+            name = request.form['name']
+            status = request.form['status']
+            print('MY USER', session['id'])
+            cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
+            cursor.callproc('editPlaylist', (name, status, playlist_id))
+            mysql.connection.commit()
+             # Redirect to home page
+            return redirect(url_for('playlist', playlist_id = playlist_id))
+        return render_template('editplaylist.html', status = status, name = playlistname)
+    # User is not loggedin redirect to login page
+    return redirect(url_for('login'))
+
+
+"""
+
 Playlist Page
 
 """
@@ -233,6 +261,13 @@ def playlist(playlist_id):
             cursor.execute('CALL removeSongFromPlaylist(%s, %s)',
                            (playlist_id, song_id))
             mysql.connection.commit()
+        
+        if request.method == 'POST' and 'edit' in request.form:
+            return redirect(url_for('editplaylist', playlist_id=playlist_id))
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT getPlaylistName(%s)', (playlist_id))
+        playlistname = cursor.fetchone()[0]
 
         cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
         cursor.execute('CALL getPlaylistSongs(%s)', (playlist_id))
@@ -244,7 +279,8 @@ def playlist(playlist_id):
 
         print(playlistsongs)
 
-        return render_template('playlist.html', songs = songs, playlistsongs = playlistsongs, playlistId = playlist_id)
+        return render_template('playlist.html', songs = songs, playlistsongs = playlistsongs, 
+                playlistId = playlist_id, name = playlistname)
     return redirect(url_for('login'))
 
 """
