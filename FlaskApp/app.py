@@ -12,7 +12,7 @@ app = Flask(__name__)
 app.secret_key = 'streamtime'
 
 #Set up pymysql connection arguments
-pymysql_connect_kwargs = {'user': 'root', 'password': 'T5zh22qa!', 'host': 'localhost',
+pymysql_connect_kwargs = {'user': 'root', 'password': 't5zh22qa', 'host': 'localhost',
                           'database': 'streamingdatabase', }
 
 app.config['pymysql_kwargs'] = pymysql_connect_kwargs
