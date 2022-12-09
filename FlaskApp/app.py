@@ -27,17 +27,17 @@ Login Page
 @app.route("/")
 @app.route("/login", methods=['GET', 'POST'])
 def login():
-    # Output message if something goes wrong...
-    msg = ''
-    # Check if "username" and "password" POST requests exist (user submitted form)
+    #Error message
+    errorMessage = ''
+    #Check if email and phone number is in POST
     if request.method == 'POST' and 'email' in request.form and 'phone' in request.form:
 
         # Create variables for easy access
         email = request.form['email']
         phone = request.form['phone']
-        # Check if account exists using MySQL
-        cursor = mysql.connection.cursor()
 
+        # Check if account exists using MySQL Function findUser
+        cursor = mysql.connection.cursor()
         cursor.execute('SELECT findUser(%s, %s) as foundUser', (email, phone,))
         account = cursor.fetchone()[0]
 
@@ -46,14 +46,13 @@ def login():
             # Create session data, we can access this data in other routes
             session['loggedin'] = True
             session['id'] = account
-            session['email'] = email
             # Redirect to home page
             return redirect(url_for('home'))
         else:
             # Account doesnt exist or username/password incorrect
-            msg = 'Incorrect username/password!'
+            message = 'Incorrect username/password!'
     # Show the login form with message (if any)
-    return render_template('login.html', msg=msg)
+    return render_template('login.html', errorMessage = errorMessage)
 
 
 """
@@ -77,6 +76,7 @@ def logout():
 Register Page
 
 """
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     # Output message if something goes wrong...
@@ -87,7 +87,9 @@ def register():
     paymentPlans = cursor.fetchall()
     print(paymentPlans)
     # Check if firstname, lastname, email, phone and plan are selected
-    if request.method == 'POST' and 'firstName' in request.form and 'lastName' in request.form and 'email' in request.form and 'phone' in request.form and 'plan' in request.form:
+    if (request.method == 'POST' and 'firstName' in request.form and 
+        'lastName' in request.form and 'email' in request.form and 
+        'phone' in request.form and 'plan' in request.form): 
         # Create variables for easy access
         firstName = request.form['firstName']
         lastName = request.form['lastName']
@@ -102,7 +104,7 @@ def register():
 
         # If account exists show error and validation checks
         if account['foundUser']:
-            msg = 'Account already exists!'
+            msg = 'Account already created!'
         elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
             msg = 'Invalid email address!'
         elif not re.match(r'[A-Za-z]+', firstName):
@@ -121,12 +123,12 @@ def register():
         # Form is empty... (no POST data)
         msg = 'Please fill out the form!'
     # Show registration form with message (if any)
-    return render_template('register.html', msg=msg, paymentplans = paymentPlans)
+    return render_template('register.html', msg = msg, paymentplans = paymentPlans)
 
 
 """
 
-Home Page
+Home Page and dependencies
 
 """
 def calculateTotalDuration(playlistsongs):
@@ -138,44 +140,50 @@ def calculateTotalDuration(playlistsongs):
             totalTime += p['duration']
     return totalTime
 
-@app.route('/home', methods=['GET', 'POST'])
+@app.route('/home', methods = ['GET', 'POST'])
 def home():
     # Check if user is loggedin
     if 'loggedin' in session:
         if request.method == 'POST' and 'new' in request.form:
-            print('clicked')
             return redirect(url_for('newplaylist'))
         
-        if request.method == 'POST' and 'click' in request.form:
-            playlistId = request.form['click']
+        if request.method == 'POST' and 'view' in request.form:
+            playlistId = request.form['view']
             return redirect(url_for('playlist', playlist_id=playlistId))
+
+        if request.method == 'POST' and 'remove' in request.form:
+            playlistId = request.form['remove']
+            cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
+            cursor.execute('CALL removePlaylist(%s)', (playlistId))
+            mysql.connection.commit()
 
         cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
         cursor.execute('CALL getPlaylistsUser(%s)', (session['id']))
         playlists = list(cursor.fetchall())
 
         for p in playlists:
-            cursor.execute('SELECT countSongsInPlaylist(%s) as cnt', (p['playlistId']))
-            song_count = cursor.fetchone()
-            p['songs'] = song_count['cnt']
-
             cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
             cursor.execute('CALL getPlaylistSongs(%s)', (p['playlistId']))
             playlistsongs = list(cursor.fetchall())
             p['duration'] = calculateTotalDuration(playlistsongs)
-        return render_template('home.html', username=session['email'], playlists = playlists)
+        return render_template('home.html', playlists = playlists)
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
 
-"""
-
-Profile Page
 
 """
-@app.route('/profile')
+
+Profile Page and dependencies
+
+"""
+@app.route('/profile', methods = ['POST', 'GET'])
 def profile():
     # Check if user is loggedin
     if 'loggedin' in session:
+        if request.method == 'POST' and 'edit' in request.form:
+            print('clicked')
+            return redirect(url_for('editplan'))
+
         cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             'CALL getUserInformation(%s)', (session['email']))
@@ -190,6 +198,32 @@ def profile():
         
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
+
+
+@app.route('/editplan', methods=['GET', 'POST'])
+def editplan():
+    paymentPlans = []
+    # Check if user is loggedin
+    if 'loggedin' in session:
+        #Get payment plans
+        cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
+        cursor.execute('call getPaymentPlans()')
+        paymentPlans = cursor.fetchall()
+
+        if request.method == 'POST' and 'plan' in request.form:
+            plan = request.form['plan']
+            print('test', plan)
+            # Call process to change payment plan
+            cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
+            cursor.execute('call editPaymentPlan(%s, %s)', (session['id'], plan))
+            mysql.connection.commit()
+            # Redirect to profile page
+            return redirect(url_for('profile'))
+        
+        return render_template('editplan.html', plans = paymentPlans)
+    # User is not loggedin redirect to login page
+    return redirect(url_for('login'))
+
 
 """
 
@@ -273,12 +307,6 @@ def playlist(playlist_id):
         cursor.execute('CALL getPlaylistSongs(%s)', (playlist_id))
         playlistsongs = list(cursor.fetchall())
 
-        cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
-        cursor.execute('CALL getSongs()')
-        songs = list(cursor.fetchall())    
-
-        print(playlistsongs)
-
         return render_template('playlist.html', songs = songs, playlistsongs = playlistsongs, 
                 playlistId = playlist_id, name = playlistname)
     return redirect(url_for('login'))
@@ -300,17 +328,8 @@ def songs(playlist_id):
             mysql.connection.commit()
         
         cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
-        cursor.execute('CALL getPlaylistSongs(%s)', (playlist_id))
-        playlistsongs = list(cursor.fetchall())
-
-        cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
-        cursor.execute('CALL getSongs()')
+        cursor.execute('CALL getSongsForPlaylistView(%s)', (playlist_id))
         songs = list(cursor.fetchall())    
-
-        songs = [s for s in songs if s not in playlistsongs]
-
-        if request.method == 'POST' and 'back' in request.form:
-            print(request.form['back'])
 
         return render_template('songs.html', songs = songs, playlistId = playlist_id)
     return redirect(url_for('login'))

@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+
+{% block title %}Edit Plan{% endblock %}
+{% block pagetitle %}Edit Plan{% endblock %}
+
+{% block content %}
+<body>
+    <div>
+        <div class="register">
+            <h1>Edit Payment</h1>
+            <form action="" method="post">
+                <label for="plan">
+					<i class="fas fa-money-bill"></i>
+				</label>
+				<select name="plan" id="plan" required>
+					{% for p in plans %}
+						<option value = "{{p['planId']}}"> {{p['type']}}</option>
+					{% endfor %}
+				</select>
+				<input type="submit" value="Submit">
+            </form>
+        </div>
+    </div>
+</body>
+
+{% endblock %}

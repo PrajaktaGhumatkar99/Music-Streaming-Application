@@ -13,7 +13,10 @@
     <span></span>
     <h1>Plan: {{paymentinfo['type']}}</h1>
     <h1>Price: {{paymentinfo['amount']}}</h1>
-    <h1>Register Date: {{datestr}}</h1>
+    <h1>Renewal Date: {{datestr}}</h1>
+    <form action = "" method="post">
+        <button class = "editplanbutton" name = "edit"> Edit Payment Plan</button>
+    </form>
 </div>
 
 {% endblock %}

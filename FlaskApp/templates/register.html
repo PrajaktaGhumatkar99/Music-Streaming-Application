@@ -10,8 +10,8 @@
 		<div class="register">
 			<h1 >Register</h1>
 			<div class="links">
-				<a href="{{ url_for('songs') }}">Login</a>
-				<a href="{{ url_for('playlist') }}" class="active">Register</a>
+				<a href="{{ url_for('login') }}">Login</a>
+				<a href="{{ url_for('register') }}" class="active">Register</a>
 			</div>
 			<form action="{{ url_for('register') }}" method="post" autocomplete="off">
 				<label for="firstName">

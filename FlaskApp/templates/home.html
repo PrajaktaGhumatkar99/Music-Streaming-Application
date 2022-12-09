@@ -2,7 +2,7 @@
 
 {% block title %}Home{% endblock %}
 
-{% block pagetitle %}Home{% endblock %}
+{% block pagetitle %}<i class="fas fa-home fa-1x"></i>{% endblock %}
 
 {% block content %}
 <div class="home">
@@ -19,6 +19,7 @@
                 <th>Tracks</th> 
                 <th>Duration</th> 
                 <td></td>
+                <td></td>
             </tr>
         </thead>
         <tbody>
@@ -30,7 +31,12 @@
                 <td>{{i['duration']}}</td>
                 <td>
                     <form action = "" method="post">
-                        <button class = "view" name = "click" value = "{{i['playlistId']}}"> View </button>
+                        <button class = "view" name = "view" value = "{{i['playlistId']}}"> View </button>
+                    </form>
+                </td>
+                <td>
+                    <form action = "" method="post">
+                        <button class = "view" name = "remove" value = "{{i['playlistId']}}"> Remove </button>
                     </form>
                 </td>
             </tr>
@@ -46,9 +52,10 @@ $(document).ready(function () {
         columns: [
           {searchable: true},
           {searchable: true},
-          {orderable: false},
+          {orderable: true, searchable: true},
           {orderable: false, searchable: false},
-          null
+          {orderable: false, searchable: false},
+          {orderable: false, searchable: false},
         ],
         "lengthChange": false
     });

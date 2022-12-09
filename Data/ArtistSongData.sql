@@ -44,3 +44,18 @@ INSERT INTO artistsong VALUES(3, 34);
 INSERT INTO artistsong VALUES(3, 35);
 INSERT INTO artistsong VALUES(3, 36);
 INSERT INTO artistsong VALUES(3, 37);
+
+-- Harry Styles
+INSERT INTO artistsong VALUES(4, 38);
+INSERT INTO artistsong VALUES(4, 39);
+INSERT INTO artistsong VALUES(4, 40);
+INSERT INTO artistsong VALUES(4, 41);
+INSERT INTO artistsong VALUES(4, 42);
+INSERT INTO artistsong VALUES(4, 43);
+INSERT INTO artistsong VALUES(4, 44);
+INSERT INTO artistsong VALUES(4, 45);
+INSERT INTO artistsong VALUES(4, 46);
+INSERT INTO artistsong VALUES(4, 47);
+INSERT INTO artistsong VALUES(4, 48);
+INSERT INTO artistsong VALUES(4, 49);
+INSERT INTO artistsong VALUES(4, 50);

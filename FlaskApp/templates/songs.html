@@ -17,6 +17,7 @@
                 <th>Title</th>
                 <th>Artist</th>
                 <th>Album</th>
+                <th>Genre</th>
                 <th>Release</th>
                 <th>Duration</th>
                 <th></th>
@@ -26,8 +27,9 @@
             {% for s in songs %}
                 <tr>
                 <td>{{ s['title'] }}</td>
-                <td>{{ s['artist'] }}</td>
+                <td>{{ s['artistName'] }}</td>
                 <td>{{ s['albumTitle'] }}</td>
+                <td>{{ s['genreName'] }}</td>
                 <td>{{ s['releaseDate'] }}</td>
                 <td>{{ s['duration'] }}</td>
                 <td>
@@ -49,6 +51,7 @@
 $(document).ready(function () {
     $('#song').DataTable({
         columns: [
+          {searchable: true},
           {searchable: true},
           {searchable: true},
           {searchable: true},

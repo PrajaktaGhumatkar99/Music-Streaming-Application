@@ -44,3 +44,18 @@ INSERT INTO songs VALUES(34, "Possibly Maybe", "1995-06-13", "00:05:05");
 INSERT INTO songs VALUES(35, "I Miss You", "1995-06-13", "00:03:59");
 INSERT INTO songs VALUES(36, "Cover Me", "1995-06-13", "00:02:06");
 INSERT INTO songs VALUES(37, "Headphones", "1995-06-13", "00:05:40");
+
+-- Harrys House
+INSERT INTO songs VALUES(38, "Music For a Sushi Resteraunt", "2022-05-20", "00:03:14");
+INSERT INTO songs VALUES(39, "Late Night Talking", "2022-05-20", "00:02:58");
+INSERT INTO songs VALUES(40, "Grapejuice", "2022-05-20", "00:03:12");
+INSERT INTO songs VALUES(41, "As It Was", "2022-05-20", "00:02:47");
+INSERT INTO songs VALUES(42, "Daylight", "2022-05-20", "00:02:45");
+INSERT INTO songs VALUES(43, "Little Freak", "2022-05-20", "00:03:22");
+INSERT INTO songs VALUES(44, "Matilda", "2022-05-20", "00:04:06");
+INSERT INTO songs VALUES(45, "Cinema", "2022-05-20", "00:04:04");
+INSERT INTO songs VALUES(46, "Daydreaming", "2022-05-20", "00:03:07");
+INSERT INTO songs VALUES(47, "Keep Driving", "2022-05-20", "00:02:20");
+INSERT INTO songs VALUES(48, "Satelite", "2022-05-20", "00:03:39");
+INSERT INTO songs VALUES(49, "Boyfriends", "2022-05-20", "00:03:15");
+INSERT INTO songs VALUES(50, "Love of my life", "2022-05-20", "00:03:12");
