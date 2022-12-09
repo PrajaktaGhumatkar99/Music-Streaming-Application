@@ -22,12 +22,17 @@ BEGIN
 	
 	CLOSE user_cursor;
     
+    IF uid_not_found = FALSE THEN 
+		SELECT "User already exists" as errorMessage;
+    END IF;
+    
     IF uid_not_found = TRUE THEN
 		INSERT INTO users VALUES(0, firstName_p, lastName_p, email_p, phone_p, plan_id, now());
 	END IF;
     
 END $$
 DELIMITER ;
+CALL createUser("Seamus", "Rioux", "seamus.rioux3@gmail.com", "6038608279", 1);
 ;
 
 -- Create a new playlist using name status and userId 
@@ -35,7 +40,7 @@ DROP  PROCEDURE IF EXISTS createPlaylist;
 DELIMITER $$
 CREATE PROCEDURE createPlaylist(IN name_p VARCHAR(45), IN status_p VARCHAR(64), IN userId INT)
 BEGIN
-	INSERT INTO playlists VALUES(0, name_p, status_p, userId);
+	INSERT INTO playlists VALUES(0, name_p, status_p, userId, 0);
 END $$
 DELIMITER ;
 ;
@@ -103,6 +108,7 @@ BEGIN
 END $$
 
 DELIMITER ;
+CALL getPlaylistSongs(1)
 ;
 
 -- Get songs with all parameters
@@ -111,12 +117,12 @@ DELIMITER $$
 CREATE PROCEDURE getSongs() 
 BEGIN
 	SELECT s.songId, s.title, releaseDate, s.duration, a.name as artistName, g.name as genreName, c.title as albumTitle FROM songs AS s
+    JOIN albumsong AS b ON s.songId = b.songId
+    JOIN albums as c ON b.albumId = c.albumId
     JOIN artistsong AS l ON s.songId = l.songId
     JOIN genresong AS gs ON s.songId = gs.songId
     JOIN genres AS g ON gs.genreId = g.genreId
-    JOIN artists AS a ON l.artistId = a.artistId
-    JOIN albumsong AS b ON s.songId = b.songId
-    JOIN albums as c ON b.albumId = c.albumId;
+    JOIN artists AS a ON l.artistId = a.artistId;   
 END $$
 
 DELIMITER ;
@@ -149,7 +155,7 @@ DROP PROCEDURE IF EXISTS getPlaylistsUser;
 DELIMITER $$
 CREATE PROCEDURE getPlaylistsUser(IN user_id INT) 
 BEGIN
-	SELECT *, countSongsInPlaylist(p.playlistId) as songs FROM playlists AS p
+	SELECT * FROM playlists AS p
     WHERE userId = user_id;
 END $$
 
@@ -259,4 +265,35 @@ END $$
 
 DELIMITER ;
 ;
+
+/*
+	Triggers
+*/
+-- Trigger for inserting song into playlist
+DROP TRIGGER IF EXISTS trackNumberPlaylistInsert;
+DELIMITER //
+CREATE TRIGGER trackNumberPlaylistInsert
+	AFTER INSERT ON playlistsong
+	FOR EACH ROW
+BEGIN
+	DECLARE trackNumber INT;
+	SELECT count(songId) INTO trackNumber FROM playlistsong WHERE playlistId = NEW.playlistId;
+    UPDATE playlists SET tracks = trackNumber WHERE playlistId = NEW.playlistId;
+END //
+
+DELIMITER ;
+;
+
+
+-- Trigger for removing song into playlist
+DROP TRIGGER IF EXISTS trackNumberPlaylistRemove;
+DELIMITER //
+CREATE TRIGGER trackNumberPlaylistRemove
+	AFTER DELETE ON playlistsong
+	FOR EACH ROW
+BEGIN
+	DECLARE trackNumber INT;
+	SELECT count(songId) INTO trackNumber FROM playlistsong WHERE playlistId = OLD.playlistId;
+    UPDATE playlists SET tracks = trackNumber WHERE playlistId = OLD.playlistId;
+END //
 

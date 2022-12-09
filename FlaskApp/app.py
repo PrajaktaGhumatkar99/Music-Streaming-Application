@@ -77,11 +77,20 @@ def logout():
 Register Page
 
 """
+def verifyUser(firstName, lastName, email, phone, plan):
+    if not re.match(r'[^@]+@[^@]+\.[^@]+', email):
+        return 'Invalid email address!'
+    elif not re.match(r'[A-Za-z]+', firstName):
+        return 'Name must cotain only characters!'
+    elif not re.match(r'[A-Za-z]+', lastName):
+        return 'Name must cotain only characters!'
+    elif not firstName or not lastName or not email or not phone or not plan:
+        return 'Please fill out the form!'
+    return '' 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    # Output message if something goes wrong...
-    msg = ''
+    errorMessage = ''
     #Get payment plan information for registration
     cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
     cursor.callproc('getPaymentPlans')
@@ -91,43 +100,33 @@ def register():
     if (request.method == 'POST' and 'firstName' in request.form and 
         'lastName' in request.form and 'email' in request.form and 
         'phone' in request.form and 'plan' in request.form): 
-        # Create variables for easy access
+
+        # Create variables for easy access to each field in the signup form
         firstName = request.form['firstName']
         lastName = request.form['lastName']
         email = request.form['email']
         phone = request.form['phone']
         plan = request.form['plan']
-        print(request.form)
 
-        # Check if account exists in database
-        cursor.execute('SELECT findUser(%s, %s) as foundUser', (email, phone,))
-        account = cursor.fetchone()
-
+        # Output message to let the user know if there is an error in the form
+        errorMessage = verifyUser(firstName, lastName, email, phone, plan)
         # If account exists show error and validation checks
-        if account['foundUser']:
-            msg = 'Account already created!'
-        elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
-            msg = 'Invalid email address!'
-        elif not re.match(r'[A-Za-z]+', firstName):
-            msg = 'Name must cotain only characters!'
-        elif not re.match(r'[A-Za-z]+', lastName):
-            msg = 'Name must cotain only characters!'
-        elif not firstName or not lastName or not email or not phone or not plan:
-            msg = 'Please fill out the form!'
-        else:
+        if(errorMessage == ''):
             # Account doesnt exists and the form data is valid, now insert new account into accounts table
-            cursor.execute('call createUser(%s, %s, %s, %s, %s)',
-                           (firstName, lastName, email, phone, plan))
+            cursor = mysql.connection.cursor()
+            cursor.callproc('createUser', args = (firstName, lastName, email, phone, plan))
+            errorMessage = cursor.fetchone()
+            if(errorMessage):
+                errorMessage = errorMessage[0]
             mysql.connection.commit()
-            msg = 'You have successfully registered!'
 
             # Check if account exists using MySQL Function findUser
             cursor = mysql.connection.cursor()
             cursor.execute('SELECT findUser(%s, %s) as foundUser', (email, phone,))
-            account = cursor.fetchone()[0]
+            account = cursor.fetchone()
 
             # If account exists in accounts table in out database
-            if account:
+            if account and not errorMessage:
                 # Session data with id and loggedin information
                 session['userLoggedIn'] = True
                 session['id'] = account
@@ -135,10 +134,10 @@ def register():
                 return redirect(url_for('home'))
 
     elif request.method == 'POST':
-        # Form is empty... (no POST data)
-        msg = 'Please fill out the form!'
-    # Show registration form with message (if any)
-    return render_template('register.html', msg = msg, paymentplans = paymentPlans)
+        # Form is empty
+        msg = 'Please complete the registration'
+    # Show registration form with error message if incorrent form data
+    return render_template('register.html', errorMessage = errorMessage, paymentplans = paymentPlans)
 
 
 """
@@ -159,9 +158,11 @@ def calculateTotalDuration(playlistsongs):
 def home():
     # Check if user is loggedin
     if 'userLoggedIn' in session:
+        #Button to create a new playlist
         if request.method == 'POST' and 'new' in request.form:
             return redirect(url_for('newplaylist'))
         
+        #View the songs within an individual playlist
         if request.method == 'POST' and 'view' in request.form:
             playlistId = request.form['view']
             return redirect(url_for('playlist', playlist_id=playlistId))
@@ -259,7 +260,6 @@ def newplaylist():
         if request.method == 'POST' and 'name' in request.form:
             name = request.form['name']
             status = request.form['status']
-            print('MY USER', session['id'])
             cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
             cursor.execute('CALL createPlaylist(%s, %s, %s)',
                            (name, status, int(session['id'])))
