@@ -21,6 +21,7 @@
                 <th>Release</th>
                 <th>Duration</th>
                 <th></th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -35,6 +36,11 @@
                 <td>
                     <form action="" method="post">
                         <button name = "add" value = "{{s['songId']}}"> Add </button>
+                    </form>
+                </td>
+                <td>
+                    <form action="" method="post">
+                        <button name = "view" value = "{{s['songId']}}"> View </button>
                     </form>
                 </td>
                 </tr>
@@ -55,6 +61,7 @@ $(document).ready(function () {
           {searchable: true},
           {searchable: true},
           {searchable: true},
+          {orderable: false, searchable: false},
           {orderable: false, searchable: false},
           {orderable: false, searchable: false},
           null

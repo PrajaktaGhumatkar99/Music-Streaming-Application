@@ -1,0 +1,19 @@
+{% extends 'layout.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block pagetitle %}<i class="fas fa-music fa-1x"></i>{% endblock %}
+
+{% block content %}
+<div class="profile">
+    <img src = "harryshouse.png"  alt="Mountain">
+    <h1>Title: {{song['title']}}</h1>
+    <h1>Artist: {{song['artistName']}}</h1>
+    <h1>Album: {{song['albumTitle']}}</h1>
+    <span></span>
+    <h1>Genre: {{song['genreName']}}</h1>
+    <h1>Release: {{song['releaseDate']}}</h1>
+    <h1>Duration: {{song['duration']}}</h1>
+</div>
+
+{% endblock %}

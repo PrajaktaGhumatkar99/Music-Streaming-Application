@@ -308,8 +308,6 @@ Playlist Page
 @app.route('/playlist/<playlist_id>', methods=['GET', 'POST'])
 def playlist(playlist_id):
     if 'loggedin' in session:
-        print(request.form)
-
         if request.method == 'POST' and 'delete' in request.form:
             cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
             song_id = request.form['delete']
@@ -341,7 +339,11 @@ Songs Page
 @app.route('/songs/<playlist_id>', methods=['GET', 'POST'])
 def songs(playlist_id):
     if 'loggedin' in session:
-        print(request.form)
+        if request.method == 'POST' and 'view' in request.form:
+            song_id = request.form['view']
+            print('BIG', song_id)
+            return redirect(url_for('song', song_id = song_id))
+
         if request.method == 'POST' and 'add' in request.form:
             cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
             song_id = request.form['add']
@@ -355,6 +357,23 @@ def songs(playlist_id):
 
         return render_template('songs.html', songs = songs, playlistId = playlist_id)
     return redirect(url_for('login'))
+
+"""
+
+Song Info Page
+
+"""
+@app.route('/song/<song_id>', methods=['GET', 'POST'])
+def song(song_id):
+    if 'loggedin' in session:
+        cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
+        cursor.callproc('getSong', (song_id,))
+        song = cursor.fetchone()
+        print(song)
+        return render_template('songdetails.html', song = song)
+        # return render_template('songdetails.html', song = song)
+    return redirect(url_for('login'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)

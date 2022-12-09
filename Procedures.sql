@@ -173,6 +173,25 @@ DELIMITER ;
 CALL getSongsFromSearch("%F%");
 ;
 
+-- Get songs with all parameters
+DROP PROCEDURE IF EXISTS getSong;
+DELIMITER $$
+CREATE PROCEDURE getSong(IN song_id INT) 
+BEGIN
+	SELECT s.songId, s.title, releaseDate, s.duration, a.name as artistName, g.name as genreName, c.title as albumTitle, coverArt FROM songs AS s
+    JOIN artistsong AS l ON s.songId = l.songId
+    JOIN genresong AS gs ON s.songId = gs.songId
+    JOIN genres AS g ON gs.genreId = g.genreId
+    JOIN artists AS a ON l.artistId = a.artistId
+    JOIN albumsong AS b ON s.songId = b.songId
+    JOIN albums as c ON b.albumId = c.albumId
+    WHERE s.songId = song_id;
+END $$
+
+DELIMITER ;
+CALL getSong(1)
+;
+
 /*
 	Update procedures
 */
