@@ -2,11 +2,10 @@
 
 {% block title %}Profile{% endblock %}
 
-{% block pagetitle %}Profile{% endblock %}
+{% block pagetitle %}<i class="fas fa-user fa-1x"></i>{% endblock %}
 
 {% block content %}
 <div class="profile">
-    <h1 class="fas fa-user"></h1>
     <h1>Name: {{userinfo['firstName']}} {{userinfo['lastName']}}</h1>
     <h1>Email: {{userinfo['email']}}</h1>
     <h1>Phone: {{userinfo['phone']}}</h1>
@@ -16,6 +15,7 @@
     <h1>Renewal Date: {{datestr}}</h1>
     <form action = "" method="post">
         <button class = "editplanbutton" name = "edit"> Edit Payment Plan</button>
+        <button class = "deleteprofile" name = "delete"> Delete Account</button>
     </form>
 </div>
 

@@ -216,12 +216,14 @@ body.loggedin {
     Profile Styling
 */
 .profile {
-    align-content: center;
+    background-color: #FFFAFF;
+    padding: 15px;
 }
 .profile h1 {
     text-align: center;
     font-size: 24px;
 }
+
 .editplanbutton {
     padding: 15px;
     background-color: #D8315B ;
@@ -229,7 +231,14 @@ body.loggedin {
     cursor: pointer;
     font-weight: bold;
     color: #FFFAFF;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+.deleteprofile {
+    padding: 15px;
+    background-color: #D8315B ;
+    border: 0;
+    cursor: pointer;
+    font-weight: bold;
+    color: #FFFAFF;
 }
 
 

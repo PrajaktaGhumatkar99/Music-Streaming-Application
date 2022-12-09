@@ -5,15 +5,17 @@ import re
 import pymysql
 import random
 import sys
-
+import db_config
 
 app = Flask(__name__)
 
 app.secret_key = 'streamtime'
 
 #Set up pymysql connection arguments
-pymysql_connect_kwargs = {'user': 'root', 'password': 't5zh22qa', 'host': 'localhost',
-                          'database': 'streamingdatabase', }
+pymysql_connect_kwargs = {'user': db_config.DB_USER, 
+                          'password': db_config.DB_PASS, 
+                          'host': db_config.DB_SERVER,
+                          'database': db_config.DB}
 
 app.config['pymysql_kwargs'] = pymysql_connect_kwargs
 mysql = MySQL(app)
@@ -43,15 +45,15 @@ def login():
 
         # If account exists in accounts table in out database
         if account:
-            # Create session data, we can access this data in other routes
+            # Session data with id and loggedin information
             session['loggedin'] = True
             session['id'] = account
             # Redirect to home page
             return redirect(url_for('home'))
         else:
             # Account doesnt exist or username/password incorrect
-            message = 'Incorrect username/password!'
-    # Show the login form with message (if any)
+            errorMessage = 'Invalid username/password!'
+    # Show the login form with message
     return render_template('login.html', errorMessage = errorMessage)
 
 
@@ -83,7 +85,7 @@ def register():
     msg = ''
     #Get payment plan information for registration
     cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
-    cursor.execute('call getPaymentPlans()')
+    cursor.callproc('getPaymentPlans')
     paymentPlans = cursor.fetchall()
     print(paymentPlans)
     # Check if firstname, lastname, email, phone and plan are selected
@@ -119,6 +121,20 @@ def register():
                            (firstName, lastName, email, phone, plan))
             mysql.connection.commit()
             msg = 'You have successfully registered!'
+
+            # Check if account exists using MySQL Function findUser
+            cursor = mysql.connection.cursor()
+            cursor.execute('SELECT findUser(%s, %s) as foundUser', (email, phone,))
+            account = cursor.fetchone()[0]
+
+            # If account exists in accounts table in out database
+            if account:
+                # Session data with id and loggedin information
+                session['loggedin'] = True
+                session['id'] = account
+                # Redirect to home page
+                return redirect(url_for('home'))
+
     elif request.method == 'POST':
         # Form is empty... (no POST data)
         msg = 'Please fill out the form!'
@@ -183,13 +199,19 @@ def profile():
         if request.method == 'POST' and 'edit' in request.form:
             print('clicked')
             return redirect(url_for('editplan'))
-
+        
+        if request.method == 'POST' and 'delete' in request.form:
+            print('clicked')
+            cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
+            print(session['id'])
+            cursor.callproc("removeUser", args = (session['id'],))
+            mysql.connection.commit()
+            return redirect(url_for('logout'))
+        
         cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
-        cursor.execute(
-            'CALL getUserInformation(%s)', (session['email']))
+        cursor.callproc('getUserInformation', args = (session['id'],))
         userInfo = cursor.fetchone()
-        cursor.execute(
-            'CALL getPaymentInformation(%s)', (userInfo['planId']))
+        cursor.callproc('getPaymentInformation', (userInfo['planId'],))
         paymentInfo = cursor.fetchone()
         print(paymentInfo)
         print(userInfo)

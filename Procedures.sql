@@ -69,9 +69,9 @@ DELIMITER ;
 -- Get information about the user based on the email
 DROP PROCEDURE IF EXISTS getUserInformation;
 DELIMITER $$
-CREATE PROCEDURE getUserInformation(IN email_p VARCHAR(128))
+CREATE PROCEDURE getUserInformation(IN user_id INT)
 BEGIN
-	SELECT * FROM users WHERE email = email_p;
+	SELECT * FROM users WHERE userId = user_id;
 END $$
 DELIMITER ;
 ;
@@ -230,4 +230,15 @@ END $$
 DELIMITER ;
 ;
 
+-- Removes a user from database
+DROP PROCEDURE IF EXISTS removeUser;
+DELIMITER $$
+CREATE PROCEDURE removeUser(IN user_id INT)
+BEGIN
+	DELETE FROM playlists WHERE userId = user_id;
+	DELETE FROM users WHERE userId = user_id;
+END $$
+
+DELIMITER ;
+;
 
