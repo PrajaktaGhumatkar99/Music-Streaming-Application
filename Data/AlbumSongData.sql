@@ -44,3 +44,18 @@ INSERT INTO albumsong VALUES(4, 34);
 INSERT INTO albumsong VALUES(4, 35);
 INSERT INTO albumsong VALUES(4, 36);
 INSERT INTO albumsong VALUES(4, 37);
+
+-- Harrys House
+INSERT INTO albumsong VALUES(5, 38);
+INSERT INTO albumsong VALUES(5, 39);
+INSERT INTO albumsong VALUES(5, 40);
+INSERT INTO albumsong VALUES(5, 41);
+INSERT INTO albumsong VALUES(5, 42);
+INSERT INTO albumsong VALUES(5, 43);
+INSERT INTO albumsong VALUES(5, 44);
+INSERT INTO albumsong VALUES(5, 45);
+INSERT INTO albumsong VALUES(5, 46);
+INSERT INTO albumsong VALUES(5, 47);
+INSERT INTO albumsong VALUES(5, 48);
+INSERT INTO albumsong VALUES(5, 49);
+INSERT INTO albumsong VALUES(5, 50);

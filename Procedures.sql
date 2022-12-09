@@ -103,7 +103,6 @@ BEGIN
 END $$
 
 DELIMITER ;
-CALL getPlaylistSongs(1)
 ;
 
 -- Get songs with all parameters

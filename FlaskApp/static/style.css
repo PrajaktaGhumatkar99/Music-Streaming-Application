@@ -283,3 +283,22 @@ body.loggedin {
     font-weight: bold;
     color: #FFFAFF;
 }
+
+/*
+    Song information
+*/
+.songdetails img {
+    float: right;
+    height: 300px;
+    width: 300px;
+    padding: 10px;
+}
+
+.backbutton {
+    padding: 15px;
+    background-color: #D8315B ;
+    border: 0;
+    cursor: pointer;
+    font-weight: bold;
+    color: #FFFAFF;
+}

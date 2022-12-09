@@ -20,24 +20,32 @@
                 <th>Title</th>
                 <th>Artist</th>
                 <th>Album</th>
+                <th>Genre</th>
                 <th>Release</th>
                 <th>Duration</th>
+                <th></th>
                 <th></th>
             </tr>
             </thead>
             <tbody>
             {% for s in playlistsongs %}
                 <tr>
-                <td>{{ s['title'] }}</td>
-                <td>{{ s['name'] }}</td>
-                <td>{{ s['albumTitle'] }}</td>
-                <td>{{ s['releaseDate'] }}</td>
-                <td>{{ s['duration'] }}</td>
-                <td>
-                    <form action="" method="post">
-                        <button name = "delete" value = "{{s['songId']}}"> Delete </button>
-                    </form>
-                </td>
+                    <td>{{ s['title'] }}</td>
+                    <td>{{ s['name'] }}</td>
+                    <td>{{ s['albumTitle'] }}</td>
+                    <td>{{ s['genre'] }}</td>
+                    <td>{{ s['releaseDate'] }}</td>
+                    <td>{{ s['duration'] }}</td>
+                    <td>
+                        <form action="" method="post">
+                            <button name = "delete" value = "{{s['songId']}}"> Delete </button>
+                        </form>
+                    </td>
+                    <td>
+                        <form action="" method="post">
+                            <button name = "view" value = "{{s['songId']}}"> View </button>
+                        </form>
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -52,12 +60,14 @@
 $(document).ready(function () {
     $('#playlist').DataTable({
         columns: [
-          {searchable: true},
-          {searchable: true},
-          {searchable: true},
+          {orderable: true, searchable: true},
+          {orderable: true, searchable: true},
+          {orderable: true, searchable: true},
+          {orderable: true, searchable: true},
+          {orderable: true, searchable: false},
+          {orderable: true, searchable: false},
           {orderable: false, searchable: false},
           {orderable: false, searchable: false},
-          null
         ],
         "lengthChange": false
     });

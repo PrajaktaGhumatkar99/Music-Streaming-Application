@@ -45,8 +45,8 @@ def login():
 
         # If account exists in accounts table in out database
         if account:
-            # Session data with id and loggedin information
-            session['loggedin'] = True
+            # Session data with id and if the user is logged in
+            session['userLoggedIn'] = True
             session['id'] = account
             # Redirect to home page
             return redirect(url_for('home'))
@@ -65,9 +65,8 @@ Logout Page
 @app.route('/logout')
 def logout():
     # Remove session data, this will log the user out
-    session.pop('loggedin', None)
+    session.pop('userLoggedIn', None)
     session.pop('id', None)
-    session.pop('username', None)
     # Redirect to login page
     return redirect(url_for('login'))
 
@@ -130,7 +129,7 @@ def register():
             # If account exists in accounts table in out database
             if account:
                 # Session data with id and loggedin information
-                session['loggedin'] = True
+                session['userLoggedIn'] = True
                 session['id'] = account
                 # Redirect to home page
                 return redirect(url_for('home'))
@@ -159,7 +158,7 @@ def calculateTotalDuration(playlistsongs):
 @app.route('/home', methods = ['GET', 'POST'])
 def home():
     # Check if user is loggedin
-    if 'loggedin' in session:
+    if 'userLoggedIn' in session:
         if request.method == 'POST' and 'new' in request.form:
             return redirect(url_for('newplaylist'))
         
@@ -195,7 +194,7 @@ Profile Page and dependencies
 @app.route('/profile', methods = ['POST', 'GET'])
 def profile():
     # Check if user is loggedin
-    if 'loggedin' in session:
+    if 'userLoggedIn' in session:
         if request.method == 'POST' and 'edit' in request.form:
             print('clicked')
             return redirect(url_for('editplan'))
@@ -226,7 +225,7 @@ def profile():
 def editplan():
     paymentPlans = []
     # Check if user is loggedin
-    if 'loggedin' in session:
+    if 'userLoggedIn' in session:
         #Get payment plans
         cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
         cursor.execute('call getPaymentPlans()')
@@ -256,7 +255,7 @@ New Playlist Page
 def newplaylist():
     status = ['Public', 'Private']
     # Check if user is loggedin
-    if 'loggedin' in session:
+    if 'userLoggedIn' in session:
         if request.method == 'POST' and 'name' in request.form:
             name = request.form['name']
             status = request.form['status']
@@ -281,7 +280,7 @@ Edit Playlist Page
 def editplaylist(playlist_id):
     status = ['Public', 'Private']
     # Check if user is loggedin
-    if 'loggedin' in session:
+    if 'userLoggedIn' in session:
         cursor = mysql.connection.cursor()
         cursor.execute('SELECT getPlaylistName(%s)', (playlist_id))
         playlistname = cursor.fetchone()[0]
@@ -307,28 +306,35 @@ Playlist Page
 """
 @app.route('/playlist/<playlist_id>', methods=['GET', 'POST'])
 def playlist(playlist_id):
-    if 'loggedin' in session:
+    if 'userLoggedIn' in session:
+        #View information about a song
+        if request.method == 'POST' and 'view' in request.form:
+            song_id = request.form['view']
+            return redirect(url_for('song', song_id = song_id, playlist_id = playlist_id))
+        
+        #Remove song from the current playlist
         if request.method == 'POST' and 'delete' in request.form:
             cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
             song_id = request.form['delete']
             cursor = mysql.connection.cursor()
-            cursor.execute('CALL removeSongFromPlaylist(%s, %s)',
-                           (playlist_id, song_id))
+            cursor.callproc('removeSongFromPlaylist', args = (playlist_id, song_id))
             mysql.connection.commit()
         
+        #Edit name of playlist
         if request.method == 'POST' and 'edit' in request.form:
             return redirect(url_for('editplaylist', playlist_id=playlist_id))
 
+        #Get name of the current playlist using sql procedure
         cursor = mysql.connection.cursor()
         cursor.execute('SELECT getPlaylistName(%s)', (playlist_id))
         playlistname = cursor.fetchone()[0]
 
+        #Get playlist songs using sql procedure
         cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
-        cursor.execute('CALL getPlaylistSongs(%s)', (playlist_id))
+        cursor.callproc('getPlaylistSongs', args = (playlist_id))
         playlistsongs = list(cursor.fetchall())
 
-        return render_template('playlist.html', songs = songs, playlistsongs = playlistsongs, 
-                playlistId = playlist_id, name = playlistname)
+        return render_template('playlist.html', songs = songs, playlistsongs = playlistsongs, playlistId = playlist_id, name = playlistname)
     return redirect(url_for('login'))
 
 """
@@ -338,23 +344,28 @@ Songs Page
 """
 @app.route('/songs/<playlist_id>', methods=['GET', 'POST'])
 def songs(playlist_id):
-    if 'loggedin' in session:
+    if 'userLoggedIn' in session:
+        #View information on individual song
         if request.method == 'POST' and 'view' in request.form:
+            #Get songId and redirect to song page
             song_id = request.form['view']
-            print('BIG', song_id)
-            return redirect(url_for('song', song_id = song_id))
+            return redirect(url_for('song', song_id = song_id, playlist_id = playlist_id))
 
+        #If user wants to add song to playlist
         if request.method == 'POST' and 'add' in request.form:
             cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
+            #Get requested song to add
             song_id = request.form['add']
             cursor.execute('CALL addSongPlaylistLink(%s, %s)',
                            (playlist_id, song_id))
             mysql.connection.commit()
         
+        #Get songs that aren't in playlist using sql query
         cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
         cursor.execute('CALL getSongsForPlaylistView(%s)', (playlist_id))
         songs = list(cursor.fetchall())    
 
+        #Render page that displays songs in table
         return render_template('songs.html', songs = songs, playlistId = playlist_id)
     return redirect(url_for('login'))
 
@@ -363,15 +374,19 @@ def songs(playlist_id):
 Song Info Page
 
 """
-@app.route('/song/<song_id>', methods=['GET', 'POST'])
-def song(song_id):
-    if 'loggedin' in session:
+@app.route('/playlist/<playlist_id>/song/<song_id>', methods=['GET', 'POST'])
+def song(song_id, playlist_id):
+    if 'userLoggedIn' in session:
+        #If user wants to return to the playlist songs page
+        if request.method == 'POST' and 'back' in request.form:
+            return redirect(url_for('playlist', playlist_id = playlist_id))
+
+        #Get information on individual song    
         cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
         cursor.callproc('getSong', (song_id,))
         song = cursor.fetchone()
-        print(song)
+        #Render song details
         return render_template('songdetails.html', song = song)
-        # return render_template('songdetails.html', song = song)
     return redirect(url_for('login'))
 
 
