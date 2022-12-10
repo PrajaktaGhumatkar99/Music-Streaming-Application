@@ -67,6 +67,7 @@ BEGIN
 	SELECT * FROM users WHERE userId = user_id;
 END $$
 DELIMITER ;
+CALL getUserInformation(2);
 ;
 
 -- Get information about the payment planId
@@ -236,7 +237,6 @@ DELIMITER $$
 CREATE PROCEDURE removePlaylist(IN playlist_id INT)
 BEGIN
 	DELETE FROM playlists WHERE playlistId = playlist_id;
-    -- DELETE FROM playlistsong WHERE playlistId = playlist_id;
 END $$
 
 DELIMITER ;

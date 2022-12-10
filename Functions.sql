@@ -42,21 +42,6 @@ DELIMITER ;
 SELECT countSongsInPlaylist(1) as a;
 ; 
 
--- Add the total duration of all songs in playlist
-DROP FUNCTION IF EXISTS findPlaylistDuration;
-DELIMITER $$
-CREATE FUNCTION findPlaylistDuration(playlist_id INT)
-RETURNS INT
-DETERMINISTIC
-READS SQL DATA
-BEGIN
-	DECLARE playlist_duration TIME;
-	RETURN playlist_duration;
-END $$
-
-DELIMITER ;
-; 
-
 
 -- Get name of playlist from playlist id
 DROP FUNCTION IF EXISTS getPlaylistName;

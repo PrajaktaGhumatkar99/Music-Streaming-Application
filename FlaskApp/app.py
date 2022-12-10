@@ -94,7 +94,7 @@ def verifyUser(firstName, lastName, email, phone, plan):
     elif not re.match(r'[A-Za-z]+', lastName):
         return 'Name must cotain only characters!'
     #Check to make sure phone number is only 10 digits
-    elif not re.match(r'@"^[0-9]{10}$"', phone):
+    elif not re.match(r'[0-9]{10}', phone):
         return 'Phone number must only be 10 digits!'
     #Check if form is filled out and no missing fields    
     elif not firstName or not lastName or not email or not phone or not plan:
@@ -108,7 +108,6 @@ def register():
     cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
     cursor.callproc('getPaymentPlans')
     paymentPlans = cursor.fetchall()
-    print(paymentPlans)
     # Check if firstname, lastname, email, phone and plan are selected
     if (request.method == 'POST' and 'firstName' in request.form and 
         'lastName' in request.form and 'email' in request.form and 
@@ -142,7 +141,6 @@ def register():
                 # Session data with id and loggedin information
                 session['userLoggedIn'] = True
                 session['id'] = account[0]
-                print(session['id'])
                 # Redirect to home page
                 return redirect(url_for('home'))
 
@@ -181,17 +179,20 @@ def home():
             playlistId = request.form['view']
             return redirect(url_for('playlist', playlist_id=playlistId))
 
-        #
+        #Remove playlist from the database
         if request.method == 'POST' and 'remove' in request.form:
             playlistId = request.form['remove']
             cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
             cursor.execute('CALL removePlaylist(%s)', (playlistId))
             mysql.connection.commit()
 
+        #Get the users playlist
         cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
         cursor.execute('CALL getPlaylistsUser(%s)', (session['id']))
         playlists = list(cursor.fetchall())
 
+        #Get information on each of the users playlist and sum the total duration
+        #of all the songs in the playlist
         for p in playlists:
             cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
             cursor.execute('CALL getPlaylistSongs(%s)', (p['playlistId']))
@@ -212,24 +213,22 @@ def profile():
     # Check if user is loggedin
     if 'userLoggedIn' in session:
         if request.method == 'POST' and 'edit' in request.form:
-            print('clicked')
             return redirect(url_for('editplan'))
         
         if request.method == 'POST' and 'delete' in request.form:
-            print('clicked')
             cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
-            print(session['id'])
             cursor.callproc("removeUser", args = (session['id'],))
             mysql.connection.commit()
             return redirect(url_for('logout'))
         
+        #Get information about the user to display
         cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
         cursor.callproc('getUserInformation', args = (session['id'],))
         userInfo = cursor.fetchone()
+        #Get information about the payment plan based on the users
         cursor.callproc('getPaymentInformation', (userInfo['planId'],))
         paymentInfo = cursor.fetchone()
-        print(paymentInfo)
-        print(userInfo)
+        #Convert date user signed up for payment plan to a readable format
         dateStr = str(userInfo['planDate'].month) + '/' + str(userInfo['planDate'].day) + '/' + str(userInfo['planDate'].year)
         return render_template('profile.html', userinfo=userInfo, paymentinfo = paymentInfo, datestr = dateStr)
         
@@ -249,7 +248,6 @@ def editplan():
 
         if request.method == 'POST' and 'plan' in request.form:
             plan = request.form['plan']
-            print('test', plan)
             # Call process to change payment plan
             cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
             cursor.execute('call editPaymentPlan(%s, %s)', (session['id'], plan))
@@ -275,10 +273,8 @@ def newplaylist():
         #Check if name of playlist and the status is in the form
         if request.method == 'POST' and 'name' in request.form and 'status' in request.form:
             name = request.form['name']
-            print(name)
             status = request.form['status']
             cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
-            print(session['id'])
             cursor.callproc('createPlaylist', args = (name, status, session['id']))
             mysql.connection.commit()
             # Redirect to home page
@@ -305,7 +301,6 @@ def editplaylist(playlist_id):
         if request.method == 'POST' and 'name' in request.form:
             name = request.form['name']
             status = request.form['status']
-            print('MY USER', session['id'])
             cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
             cursor.callproc('editPlaylist', (name, status, playlist_id))
             mysql.connection.commit()
