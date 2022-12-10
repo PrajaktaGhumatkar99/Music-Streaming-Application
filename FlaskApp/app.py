@@ -74,16 +74,29 @@ def logout():
 
 """
 
-Register Page
+Register Page and dependencies
+
+"""
+
+"""
+
+Verify fields of the user registration form
 
 """
 def verifyUser(firstName, lastName, email, phone, plan):
+    #Check email address format make sure @ has text on either side
     if not re.match(r'[^@]+@[^@]+\.[^@]+', email):
         return 'Invalid email address!'
+    #Check first name for only alpha characters
     elif not re.match(r'[A-Za-z]+', firstName):
         return 'Name must cotain only characters!'
+    #Check last name for only alpha characters
     elif not re.match(r'[A-Za-z]+', lastName):
         return 'Name must cotain only characters!'
+    #Check to make sure phone number is only 10 digits
+    elif not re.match(r'@"^[0-9]{10}$"', phone):
+        return 'Phone number must only be 10 digits!'
+    #Check if form is filled out and no missing fields    
     elif not firstName or not lastName or not email or not phone or not plan:
         return 'Please fill out the form!'
     return '' 
@@ -120,22 +133,22 @@ def register():
                 errorMessage = errorMessage[0]
             mysql.connection.commit()
 
-            # Check if account exists using MySQL Function findUser
-            cursor = mysql.connection.cursor()
-            cursor.execute('SELECT findUser(%s, %s) as foundUser', (email, phone,))
-            account = cursor.fetchone()
-
             # If account exists in accounts table in out database
-            if account and not errorMessage:
+            if not errorMessage:
+                # Check if account exists using MySQL Function findUser
+                cursor = mysql.connection.cursor()
+                cursor.execute('SELECT findUser(%s, %s) as foundUser', (email, phone,))
+                account = cursor.fetchone()
                 # Session data with id and loggedin information
                 session['userLoggedIn'] = True
-                session['id'] = account
+                session['id'] = account[0]
+                print(session['id'])
                 # Redirect to home page
                 return redirect(url_for('home'))
 
     elif request.method == 'POST':
         # Form is empty
-        msg = 'Please complete the registration'
+        errorMessage = 'Please complete the registration'
     # Show registration form with error message if incorrent form data
     return render_template('register.html', errorMessage = errorMessage, paymentplans = paymentPlans)
 
@@ -145,6 +158,7 @@ def register():
 Home Page and dependencies
 
 """
+# Calculate the total duration of all the songs in the playlist
 def calculateTotalDuration(playlistsongs):
     totalTime = 0
     for p in playlistsongs:
@@ -167,6 +181,7 @@ def home():
             playlistId = request.form['view']
             return redirect(url_for('playlist', playlist_id=playlistId))
 
+        #
         if request.method == 'POST' and 'remove' in request.form:
             playlistId = request.form['remove']
             cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
@@ -257,16 +272,18 @@ def newplaylist():
     status = ['Public', 'Private']
     # Check if user is loggedin
     if 'userLoggedIn' in session:
-        if request.method == 'POST' and 'name' in request.form:
+        #Check if name of playlist and the status is in the form
+        if request.method == 'POST' and 'name' in request.form and 'status' in request.form:
             name = request.form['name']
+            print(name)
             status = request.form['status']
             cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
-            cursor.execute('CALL createPlaylist(%s, %s, %s)',
-                           (name, status, int(session['id'])))
+            print(session['id'])
+            cursor.callproc('createPlaylist', args = (name, status, session['id']))
             mysql.connection.commit()
-             # Redirect to home page
+            # Redirect to home page
             return redirect(url_for('home'))
-        return render_template('newplaylist.html', username=session['email'], status = status)
+        return render_template('newplaylist.html',  status = status)
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
 
@@ -284,7 +301,7 @@ def editplaylist(playlist_id):
         cursor = mysql.connection.cursor()
         cursor.execute('SELECT getPlaylistName(%s)', (playlist_id))
         playlistname = cursor.fetchone()[0]
-
+        #Check if the name of the playlist is in the form
         if request.method == 'POST' and 'name' in request.form:
             name = request.form['name']
             status = request.form['status']
@@ -331,7 +348,7 @@ def playlist(playlist_id):
 
         #Get playlist songs using sql procedure
         cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
-        cursor.callproc('getPlaylistSongs', args = (playlist_id))
+        cursor.callproc('getPlaylistSongs', args = (playlist_id,))
         playlistsongs = list(cursor.fetchall())
 
         return render_template('playlist.html', songs = songs, playlistsongs = playlistsongs, playlistId = playlist_id, name = playlistname)
@@ -383,7 +400,7 @@ def song(song_id, playlist_id):
 
         #Get information on individual song    
         cursor = mysql.connection.cursor(pymysql.cursors.DictCursor)
-        cursor.callproc('getSong', (song_id,))
+        cursor.callproc('getSong', args = (song_id,))
         song = cursor.fetchone()
         #Render song details
         return render_template('songdetails.html', song = song)

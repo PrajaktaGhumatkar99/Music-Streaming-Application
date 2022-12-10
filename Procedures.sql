@@ -9,30 +9,13 @@ DROP PROCEDURE IF EXISTS createUser;
 DELIMITER $$
 CREATE PROCEDURE createUser(IN firstName_p VARCHAR(64), IN lastName_p VARCHAR(64), IN email_p VARCHAR(128), IN phone_p VARCHAR(10), IN plan_id INT)
 BEGIN
-	DECLARE uid_found INT;
-    DECLARE uid_not_found INT;
-	DECLARE user_cursor CURSOR FOR SELECT userId FROM users WHERE email = email_p AND phone = phone_p;
-	DECLARE CONTINUE HANDLER FOR NOT FOUND
-		SET uid_not_found = TRUE;
-
-	SET uid_not_found = FALSE;
-	OPEN user_cursor;
-	
-	FETCH user_cursor INTO uid_found;
-	
-	CLOSE user_cursor;
-    
-    IF uid_not_found = FALSE THEN 
-		SELECT "User already exists" as errorMessage;
-    END IF;
-    
-    IF uid_not_found = TRUE THEN
-		INSERT INTO users VALUES(0, firstName_p, lastName_p, email_p, phone_p, plan_id, now());
-	END IF;
-    
+	DECLARE EXIT HANDLER FOR 1062
+    BEGIN
+            SELECT "User already exists" as errorMessage;
+	END;
+    INSERT INTO users VALUES(0, firstName_p, lastName_p, email_p, phone_p, plan_id, now());
 END $$
 DELIMITER ;
-CALL createUser("Seamus", "Rioux", "seamus.rioux3@gmail.com", "6038608279", 1);
 ;
 
 -- Create a new playlist using name status and userId 
@@ -45,11 +28,16 @@ END $$
 DELIMITER ;
 ;
 
-
+-- Add song into playlist
 DROP  PROCEDURE IF EXISTS addSongPlaylistLink;
 DELIMITER $$
 CREATE PROCEDURE addSongPlaylistLink(IN song_id INT, IN playlist_id INT)
 BEGIN
+	DECLARE duplicate_entry_for_key TINYINT DEFAULT FALSE;
+	DECLARE EXIT HANDLER FOR 1062
+    BEGIN
+			SELECT 'Song already exists in playlist' AS errorMessage;
+	END;
 	INSERT INTO playlistsong VALUES(song_id, playlist_id);
 END $$
 DELIMITER ;
