@@ -21,23 +21,31 @@ Open StreamingDatabaseDump.sql file in the root directory. Run these commands
 
 #### Create new virtual environment variable
 1. Ensure Python is installed on your machine and it is able to run through the command prompt or terminal. Check the installation using:
+  
   1.1 Windows Command Prompt:
       python --version
+  
   1.2 Unix:
       python3 --version
 2. Navigate into project directory
+	
 	2.1 Windows Command Prompt:
 	    cd RiouxSGhumatkarPProject\Streaming-Database\FlaskApp
+	
 	2.2 Unix:
 	    cd RiouxSGhumatkarPProject/Streaming-Database/FlaskApp
 3. Run the following command : 
+  
   3.1 Windows Command Prompt:
       python -m venv <name_of_virtualenv>
+  
   3.2 Unix:
       python3 -m venv <name_of_virtualenv>
 4. Activate virtual environment 
+  
   4.1 Windows:
       <name_of_virtualenv> \Scripts\activate
+  
   4.2 Unix:
       source <name_of_virtualenv> /bin/activate
       
